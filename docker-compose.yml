@@ -1,0 +1,155 @@
+version: "3.8"
+
+# DijkFood A2 — Docker Compose para desenvolvimento local
+# Uso: docker-compose up --build
+
+services:
+  # ============================================================
+  # INFRAESTRUTURA
+  # ============================================================
+  postgres:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_DB: dijkfood
+      POSTGRES_USER: dijkfood
+      POSTGRES_PASSWORD: dijkfood
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dijkfood"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      SERVICES: kinesis,dynamodb,s3,lambda,glue,athena
+      DEFAULT_REGION: us-east-1
+      DOCKER_HOST: unix:///var/run/docker.sock
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # ============================================================
+  # MICROSSERVIÇOS
+  # ============================================================
+  order-processor:
+    build: ./services/order-processor
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: dijkfood
+      DB_USER: dijkfood
+      DB_PASS: dijkfood
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      KINESIS_STREAM: dijkfood-events
+      ML_INFERENCE_URL: http://ml-inference:8004
+      GRAPH_PATH: /app/sp_graph.graphml
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+  order-management:
+    build: ./services/order-management
+    ports:
+      - "8001:8001"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: dijkfood
+      DB_USER: dijkfood
+      DB_PASS: dijkfood
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      KINESIS_STREAM: dijkfood-events
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+  position-tracker:
+    build: ./services/position-tracker
+    ports:
+      - "8002:8002"
+    environment:
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      KINESIS_STREAM: dijkfood-events
+      DYNAMODB_TABLE: courier_positions
+    depends_on:
+      localstack:
+        condition: service_started
+
+  conversational:
+    build: ./services/conversational
+    ports:
+      - "8003:8003"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: dijkfood
+      DB_USER: dijkfood
+      DB_PASS: dijkfood
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      KINESIS_STREAM: dijkfood-events
+      BEDROCK_PROFILE: bedrock
+      BEDROCK_MODEL_ID: anthropic.claude-3-sonnet-20240229-v1:0
+      ATHENA_DATABASE: dijkfood_analytics
+      ML_INFERENCE_URL: http://ml-inference:8004
+      BEDROCK_AWS_ACCESS_KEY_ID: ${BEDROCK_AWS_ACCESS_KEY_ID:-}
+      BEDROCK_AWS_SECRET_ACCESS_KEY: ${BEDROCK_AWS_SECRET_ACCESS_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+  ml-inference:
+    build: ./services/ml-inference
+    ports:
+      - "8004:8004"
+    environment:
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      MODELS_BUCKET: dijkfood-models
+    depends_on:
+      localstack:
+        condition: service_started
+
+  dashboard-analytics:
+    build: ./services/dashboard-analytics
+    ports:
+      - "8005:8005"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: dijkfood
+      DB_USER: dijkfood
+      DB_PASS: dijkfood
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      ATHENA_DATABASE: dijkfood_analytics
+      ATHENA_OUTPUT: s3://dijkfood-athena-results/
+      DYNAMODB_TABLE: anomalies
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  localstack_data:

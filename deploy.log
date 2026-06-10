@@ -1,0 +1,1040 @@
+2026-06-09 23:32:37,296 [INFO] deploy: ================================================================================
+2026-06-09 23:32:37,296 [INFO] deploy:    DijkFood A2 � CRIA��O DE INFRAESTRUTURA COMPLETA
+2026-06-09 23:32:37,296 [INFO] deploy: ================================================================================
+2026-06-09 23:32:37,368 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-09 23:32:39,171 [ERROR] deploy: ERRO FATAL durante cria��o: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-09 23:32:39,174 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:34:09,814 [INFO] deploy: ================================================================================
+2026-06-09 23:34:09,814 [INFO] deploy:    DijkFood A2 � CRIA��O DE INFRAESTRUTURA COMPLETA
+2026-06-09 23:34:09,814 [INFO] deploy: ================================================================================
+2026-06-09 23:34:09,879 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-09 23:34:11,311 [ERROR] deploy: ERRO FATAL durante cria��o: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-09 23:34:11,311 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:34:27,904 [INFO] deploy: ================================================================================
+2026-06-09 23:34:27,904 [INFO] deploy:    DijkFood A2 � CRIA��O DE INFRAESTRUTURA COMPLETA
+2026-06-09 23:34:27,904 [INFO] deploy: ================================================================================
+2026-06-09 23:34:27,976 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-09 23:34:29,303 [ERROR] deploy: ERRO FATAL durante cria��o: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PER�ODO\Computa��o em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-09 23:34:29,307 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:35:15,599 [INFO] deploy: ================================================================================
+2026-06-09 23:35:15,599 [INFO] deploy:    DijkFood A2 � CRIA��O DE INFRAESTRUTURA COMPLETA
+2026-06-09 23:35:15,600 [INFO] deploy: ================================================================================
+2026-06-09 23:35:15,654 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-09 23:35:17,874 [INFO] deploy: Conta AWS: 884474267760
+2026-06-09 23:35:17,874 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-09 23:35:17,923 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-09 23:35:20,447 [INFO] infra.vpc: VPC criada: vpc-050b0567a3b139c07
+2026-06-09 23:35:24,831 [INFO] infra.vpc: Subnets criadas
+2026-06-09 23:35:25,615 [INFO] infra.vpc: Internet Gateway criado: igw-0ca1dcab582ab6833
+2026-06-09 23:35:28,174 [INFO] infra.vpc: NAT Gateway criado: nat-0f1342eff5e278bdd, aguardando ficar dispon�vel...
+2026-06-09 23:36:00,162 [INFO] deploy: ================================================================================
+2026-06-09 23:36:00,162 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-09 23:36:00,162 [INFO] deploy: ================================================================================
+2026-06-09 23:36:00,218 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-09 23:36:02,464 [INFO] deploy: Conta AWS: 884474267760
+2026-06-09 23:36:02,464 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-09 23:36:02,464 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-09 23:36:02,464 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-09 23:36:05,167 [INFO] infra.vpc: VPC criada: vpc-01445a46df47d4aee
+2026-06-09 23:36:09,850 [INFO] infra.vpc: Subnets criadas
+2026-06-09 23:36:10,655 [INFO] infra.vpc: Internet Gateway criado: igw-0eca3618e0a6c8f79
+2026-06-09 23:36:13,200 [INFO] infra.vpc: NAT Gateway criado: nat-06b628e221245eaec, aguardando ficar disponível...
+2026-06-09 23:37:44,468 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-09 23:37:47,776 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-09 23:37:51,368 [INFO] infra.vpc: Security Groups criados
+2026-06-09 23:37:51,370 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:37:51,371 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-09 23:37:51,371 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-09 23:37:53,093 [INFO] infra.database: DB Subnet Group criado
+2026-06-09 23:37:55,298 [INFO] infra.database: Instância RDS criada, aguardando disponibilidade...
+2026-06-09 23:54:07,160 [INFO] infra.database: RDS disponível: dijkfood-db.c8qic2tonppa.us-east-1.rds.amazonaws.com:5432
+2026-06-09 23:54:07,164 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:54:07,165 [INFO] infra.database: === Inicializando schema do PostgreSQL ===
+2026-06-09 23:54:07,191 [WARNING] infra.database: psql não encontrado, tentando via asyncpg...
+2026-06-09 23:54:28,601 [ERROR] deploy: ERRO FATAL durante criação: [WinError 121] O tempo limite do semáforo expirou
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 94, in init_rds_schema
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "C:\Python312\Lib\subprocess.py", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] O sistema não pode encontrar o arquivo especificado
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 185, in create_all
+    init_rds_schema(db_config)
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 114, in init_rds_schema
+    _init_schema_asyncpg(db_config, schema_path)
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 142, in _init_schema_asyncpg
+    asyncio.run(_apply())
+  File "C:\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\base_events.py", line 684, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 123, in _apply
+    conn = await asyncpg.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connection.py", line 2329, in connect
+    return await connect_utils._connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connect_utils.py", line 1017, in _connect
+    raise last_error or exceptions.TargetServerAttributeNotMatched(
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connect_utils.py", line 991, in _connect
+    conn = await _connect_addr(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connect_utils.py", line 828, in _connect_addr
+    return await __connect_addr(params, True, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connect_utils.py", line 873, in __connect_addr
+    tr, pr = await connector
+             ^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\asyncpg\connect_utils.py", line 744, in _create_ssl_connection
+    tr, pr = await loop.create_connection(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\base_events.py", line 1119, in create_connection
+    raise exceptions[0]
+  File "C:\Python312\Lib\asyncio\base_events.py", line 1101, in create_connection
+    sock = await self._connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\base_events.py", line 1004, in _connect_sock
+    await self.sock_connect(sock, address)
+  File "C:\Python312\Lib\asyncio\proactor_events.py", line 727, in sock_connect
+    return await self._proactor.connect(sock, address)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\windows_events.py", line 798, in _poll
+    value = callback(transferred, key, ov)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\asyncio\windows_events.py", line 594, in finish_connect
+    ov.getresult()
+OSError: [WinError 121] O tempo limite do semáforo expirou
+2026-06-09 23:54:28,730 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-09 23:56:31,161 [INFO] deploy: ================================================================================
+2026-06-09 23:56:31,161 [INFO] deploy:    DijkFood A2 — DESTRUIÇÃO DE INFRAESTRUTURA
+2026-06-09 23:56:31,161 [INFO] deploy: ================================================================================
+2026-06-09 23:56:31,242 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-09 23:56:31,875 [INFO] deploy: 
+🗑️  FASE 1: Auto Scaling, ECS Services, ALB, ECR
+2026-06-09 23:56:31,876 [INFO] infra.compute: === Destruindo recursos de computação ===
+2026-06-09 23:56:32,775 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-processor: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-order-processor, scalable dimension: ecs:service:DesiredCount
+2026-06-09 23:56:33,633 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-management: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-order-management, scalable dimension: ecs:service:DesiredCount
+2026-06-09 23:56:34,496 [WARNING] infra.compute: Erro ao remover Auto Scaling de position-tracker: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-position-tracker, scalable dimension: ecs:service:DesiredCount
+2026-06-09 23:56:35,399 [WARNING] infra.compute: Erro ao remover Auto Scaling de conversational: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-conversational, scalable dimension: ecs:service:DesiredCount
+2026-06-09 23:56:36,250 [WARNING] infra.compute: Erro ao remover Auto Scaling de ml-inference: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-ml-inference, scalable dimension: ecs:service:DesiredCount
+2026-06-09 23:56:36,251 [WARNING] infra.compute: Erro ao deletar service order-processor: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:56:36,251 [WARNING] infra.compute: Erro ao deletar service order-management: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:56:36,252 [WARNING] infra.compute: Erro ao deletar service position-tracker: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:56:36,252 [WARNING] infra.compute: Erro ao deletar service conversational: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:56:36,252 [WARNING] infra.compute: Erro ao deletar service ml-inference: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:57:07,860 [WARNING] infra.compute: Erro ao deletar cluster: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-09 23:57:09,502 [INFO] deploy: 
+🗑️  FASE 2: CloudWatch
+2026-06-09 23:57:09,502 [INFO] infra.monitoring: === Destruindo recursos de monitoramento ===
+2026-06-09 23:57:10,366 [INFO] infra.monitoring: Alarm 'dijkfood-alb-5xx-high' deletado
+2026-06-09 23:57:10,532 [INFO] infra.monitoring: Alarm 'dijkfood-alb-latency-p95' deletado
+2026-06-09 23:57:10,773 [INFO] infra.monitoring: Dashboard deletado
+2026-06-09 23:57:11,625 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-processor': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-09 23:57:11,771 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-management': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-09 23:57:11,918 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/position-tracker': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-09 23:57:12,066 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/conversational': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-09 23:57:12,212 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/ml-inference': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-09 23:57:12,212 [INFO] deploy: 
+🗑️  FASE 3: Streaming (Lambda, Firehose, Kinesis)
+2026-06-09 23:57:12,212 [INFO] infra.streaming: === Destruindo recursos de streaming ===
+2026-06-09 23:57:13,210 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-anomaly-detector': An error occurred (ResourceNotFoundException) when calling the DeleteFunction operation: Function not found: arn:aws:lambda:us-east-1:884474267760:function:dijkfood-anomaly-detector
+2026-06-09 23:57:13,413 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-firehose-transform': An error occurred (ResourceNotFoundException) when calling the DeleteFunction operation: Function not found: arn:aws:lambda:us-east-1:884474267760:function:dijkfood-firehose-transform
+2026-06-09 23:57:14,301 [WARNING] infra.streaming: Erro ao deletar Firehose: An error occurred (ResourceNotFoundException) when calling the DeleteDeliveryStream operation: Firehose under account 884474267760 not found.
+2026-06-09 23:57:15,153 [WARNING] infra.streaming: Erro ao deletar Kinesis stream: An error occurred (ResourceNotFoundException) when calling the DeleteStream operation: Stream dijkfood-events under account 884474267760 not found.
+2026-06-09 23:57:15,153 [INFO] deploy: 
+🗑️  FASE 4: Analytics (CloudFront, Glue, S3)
+2026-06-09 23:57:15,154 [INFO] infra.analytics: === Destruindo recursos analíticos ===
+2026-06-09 23:57:15,941 [WARNING] infra.analytics: Erro ao deletar Crawler: An error occurred (EntityNotFoundException) when calling the DeleteCrawler operation: Crawler entry with name dijkfood-crawler does not exist
+2026-06-09 23:57:16,240 [WARNING] infra.analytics: Erro ao deletar tabela Glue: An error occurred (EntityNotFoundException) when calling the DeleteTable operation: Database dijkfood_analytics not found.
+2026-06-09 23:57:16,544 [WARNING] infra.analytics: Erro ao deletar database Glue: An error occurred (EntityNotFoundException) when calling the DeleteDatabase operation: Database dijkfood_analytics not found.
+2026-06-09 23:57:16,545 [INFO] deploy: 
+🗑️  FASE 5: Bancos de Dados
+2026-06-09 23:57:16,545 [INFO] infra.database: === Destruindo RDS ===
+2026-06-09 23:57:17,579 [INFO] infra.database: Instância RDS em processo de deleção...
+2026-06-10 00:01:20,027 [INFO] infra.database: Instância RDS deletada
+2026-06-10 00:01:20,947 [INFO] infra.database: DB Subnet Group deletado
+2026-06-10 00:01:20,948 [INFO] infra.database: === Destruindo tabelas DynamoDB ===
+2026-06-10 00:01:21,646 [WARNING] infra.database: Erro ao deletar tabela 'courier_positions': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: courier_positions not found
+2026-06-10 00:01:21,808 [WARNING] infra.database: Erro ao deletar tabela 'order_status_cache': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: order_status_cache not found
+2026-06-10 00:01:21,955 [WARNING] infra.database: Erro ao deletar tabela 'anomalies': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: anomalies not found
+2026-06-10 00:01:22,096 [WARNING] infra.database: Erro ao deletar tabela 'historical_averages': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: historical_averages not found
+2026-06-10 00:01:22,096 [INFO] deploy: 
+🗑️  FASE 6: Rede (VPC)
+2026-06-10 00:01:22,096 [INFO] infra.vpc: === Destruindo VPC e infraestrutura de rede ===
+2026-06-10 00:01:23,082 [INFO] infra.vpc: NAT Gateway nat-06b628e221245eaec deletado (aguardando...)
+2026-06-10 00:02:00,061 [INFO] infra.vpc: Elastic IP liberado
+2026-06-10 00:02:00,509 [INFO] infra.vpc: SG sg-0b50dfcbd52c3f0ca deletado
+2026-06-10 00:02:00,970 [INFO] infra.vpc: SG sg-0d5b1cba55eaada75 deletado
+2026-06-10 00:02:01,447 [INFO] infra.vpc: SG sg-0ddf7c8eb60a2567c deletado
+2026-06-10 00:02:02,685 [INFO] infra.vpc: Route table rtb-09509e0f3ab9e8ae2 deletada
+2026-06-10 00:02:03,916 [INFO] infra.vpc: Route table rtb-00d7012789baa5603 deletada
+2026-06-10 00:02:04,537 [INFO] infra.vpc: IGW igw-0eca3618e0a6c8f79 deletado
+2026-06-10 00:02:05,206 [INFO] infra.vpc: Subnet subnet-0c59303ddbb3e8480 deletada
+2026-06-10 00:02:05,852 [INFO] infra.vpc: Subnet subnet-02d733654def5fd8d deletada
+2026-06-10 00:02:06,480 [INFO] infra.vpc: Subnet subnet-0a87dd0ac46584218 deletada
+2026-06-10 00:02:07,094 [INFO] infra.vpc: Subnet subnet-03b0f341f0b68c801 deletada
+2026-06-10 00:02:07,672 [INFO] infra.vpc: VPC vpc-01445a46df47d4aee deletada
+2026-06-10 00:02:07,672 [INFO] infra.vpc: === VPC destruída ===
+2026-06-10 00:02:07,672 [INFO] deploy: 
+================================================================================
+2026-06-10 00:02:07,672 [INFO] deploy:    ✅ INFRAESTRUTURA DESTRUÍDA COM SUCESSO!
+2026-06-10 00:02:07,674 [INFO] deploy:    Tempo total: 5.6 minutos
+2026-06-10 00:02:07,674 [INFO] deploy: ================================================================================
+2026-06-10 00:03:30,978 [INFO] deploy: ================================================================================
+2026-06-10 00:03:30,979 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 00:03:30,979 [INFO] deploy: ================================================================================
+2026-06-10 00:03:31,052 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-10 00:03:32,453 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-10 00:03:32,456 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:03:48,712 [INFO] deploy: ================================================================================
+2026-06-10 00:03:48,712 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 00:03:48,712 [INFO] deploy: ================================================================================
+2026-06-10 00:03:48,787 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 00:03:50,989 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 00:03:50,989 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 00:03:50,990 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 00:03:50,993 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 00:03:53,684 [INFO] infra.vpc: VPC criada: vpc-0e1af7fae6f61779a
+2026-06-10 00:03:57,669 [INFO] infra.vpc: Subnets criadas
+2026-06-10 00:03:58,474 [INFO] infra.vpc: Internet Gateway criado: igw-0ddc749c474bb21bb
+2026-06-10 00:04:00,939 [INFO] infra.vpc: NAT Gateway criado: nat-06cced9229f0b9c23, aguardando ficar disponível...
+2026-06-10 00:04:31,452 [INFO] deploy: ================================================================================
+2026-06-10 00:04:31,452 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 00:04:31,452 [INFO] deploy: ================================================================================
+2026-06-10 00:04:31,508 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 00:04:33,709 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 00:04:33,709 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 00:04:33,709 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 00:04:33,709 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 00:04:36,218 [INFO] infra.vpc: VPC criada: vpc-056230ba2d160f366
+2026-06-10 00:04:40,178 [INFO] infra.vpc: Subnets criadas
+2026-06-10 00:04:40,967 [INFO] infra.vpc: Internet Gateway criado: igw-006e2c473cd3b1d76
+2026-06-10 00:04:43,613 [INFO] infra.vpc: NAT Gateway criado: nat-0f30568495eabb33a, aguardando ficar disponível...
+2026-06-10 00:05:47,329 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-10 00:05:50,803 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-10 00:05:54,396 [INFO] infra.vpc: Security Groups criados
+2026-06-10 00:05:54,397 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:05:54,397 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-10 00:05:54,398 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-10 00:05:56,110 [INFO] infra.database: DB Subnet Group criado
+2026-06-10 00:05:58,206 [INFO] infra.database: Instância RDS criada, aguardando disponibilidade...
+2026-06-10 00:06:29,994 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-10 00:06:33,360 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-10 00:06:36,922 [INFO] infra.vpc: Security Groups criados
+2026-06-10 00:06:36,923 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:06:36,923 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-10 00:06:36,923 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-10 00:06:38,468 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (DBSubnetGroupAlreadyExists) when calling the CreateDBSubnetGroup operation: The DB subnet group 'dijkfood-db-subnet-group' already exists.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 181, in create_all
+    db_config = create_rds(rds, vpc_config)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 29, in create_rds
+    rds_client.create_db_subnet_group(
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.DBSubnetGroupAlreadyExistsFault: An error occurred (DBSubnetGroupAlreadyExists) when calling the CreateDBSubnetGroup operation: The DB subnet group 'dijkfood-db-subnet-group' already exists.
+2026-06-10 00:06:38,472 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:09:06,425 [INFO] deploy: ================================================================================
+2026-06-10 00:09:06,428 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 00:09:06,428 [INFO] deploy: ================================================================================
+2026-06-10 00:09:06,488 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 00:09:08,758 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 00:09:08,758 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 00:09:08,758 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 00:09:08,761 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 00:09:11,243 [INFO] infra.vpc: VPC criada: vpc-03b73d72d0cde5092
+2026-06-10 00:09:15,410 [INFO] infra.vpc: Subnets criadas
+2026-06-10 00:09:16,213 [INFO] infra.vpc: Internet Gateway criado: igw-06286d8c0db73e377
+2026-06-10 00:09:18,893 [INFO] infra.vpc: NAT Gateway criado: nat-0d07932f2adf5059c, aguardando ficar disponível...
+2026-06-10 00:11:20,451 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-10 00:11:23,781 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-10 00:11:27,196 [INFO] infra.vpc: Security Groups criados
+2026-06-10 00:11:27,202 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:11:27,202 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-10 00:11:27,204 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-10 00:11:28,846 [INFO] infra.database: DB Subnet Group já existe. Atualizando subnets...
+2026-06-10 00:11:30,073 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (InvalidParameterValue) when calling the ModifyDBSubnetGroup operation: The new Subnets are not in the same Vpc as the existing subnet group
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 30, in create_rds
+    rds_client.create_db_subnet_group(
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.errorfactory.DBSubnetGroupAlreadyExistsFault: An error occurred (DBSubnetGroupAlreadyExists) when calling the CreateDBSubnetGroup operation: The DB subnet group 'dijkfood-db-subnet-group' already exists.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 181, in create_all
+    db_config = create_rds(rds, vpc_config)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 38, in create_rds
+    rds_client.modify_db_subnet_group(
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidParameterValue) when calling the ModifyDBSubnetGroup operation: The new Subnets are not in the same Vpc as the existing subnet group
+2026-06-10 00:11:30,079 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:12:32,828 [ERROR] deploy: ERRO FATAL durante criação: Waiter DBInstanceAvailable failed: Waiter encountered a terminal failure state: For expression "DBInstances[].DBInstanceStatus" we matched expected path: "deleting" at least once
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 181, in create_all
+    db_config = create_rds(rds, vpc_config)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\database.py", line 59, in create_rds
+    PubliclyAccessible=True,
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\waiter.py", line 55, in wait
+    Waiter.wait(self, **kwargs)
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\waiter.py", line 374, in wait
+    raise WaiterError(
+botocore.exceptions.WaiterError: Waiter DBInstanceAvailable failed: Waiter encountered a terminal failure state: For expression "DBInstances[].DBInstanceStatus" we matched expected path: "deleting" at least once
+2026-06-10 00:12:32,862 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:16:31,980 [INFO] deploy: ================================================================================
+2026-06-10 00:16:31,980 [INFO] deploy:    DijkFood A2 — DESTRUIÇÃO DE INFRAESTRUTURA
+2026-06-10 00:16:31,980 [INFO] deploy: ================================================================================
+2026-06-10 00:16:32,042 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 00:16:33,052 [INFO] deploy: 
+🗑️  FASE 1: Auto Scaling, ECS Services, ALB, ECR
+2026-06-10 00:16:33,059 [INFO] infra.compute: === Destruindo recursos de computação ===
+2026-06-10 00:16:34,010 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-processor: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-order-processor, scalable dimension: ecs:service:DesiredCount
+2026-06-10 00:16:34,878 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-management: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-order-management, scalable dimension: ecs:service:DesiredCount
+2026-06-10 00:16:35,745 [WARNING] infra.compute: Erro ao remover Auto Scaling de position-tracker: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-position-tracker, scalable dimension: ecs:service:DesiredCount
+2026-06-10 00:16:36,586 [WARNING] infra.compute: Erro ao remover Auto Scaling de conversational: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-conversational, scalable dimension: ecs:service:DesiredCount
+2026-06-10 00:16:37,458 [WARNING] infra.compute: Erro ao remover Auto Scaling de ml-inference: An error occurred (ObjectNotFoundException) when calling the DeregisterScalableTarget operation: No scalable target found for service namespace: ecs, resource ID: service/dijkfood-cluster/dijkfood-ml-inference, scalable dimension: ecs:service:DesiredCount
+2026-06-10 00:16:37,459 [WARNING] infra.compute: Erro ao deletar service order-processor: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:16:37,459 [WARNING] infra.compute: Erro ao deletar service order-management: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:16:37,459 [WARNING] infra.compute: Erro ao deletar service position-tracker: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:16:37,459 [WARNING] infra.compute: Erro ao deletar service conversational: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:16:37,460 [WARNING] infra.compute: Erro ao deletar service ml-inference: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:17:08,909 [WARNING] infra.compute: Erro ao deletar cluster: Parameter validation failed:
+Invalid type for parameter cluster, value: None, type: <class 'NoneType'>, valid types: <class 'str'>
+2026-06-10 00:17:10,387 [INFO] deploy: 
+🗑️  FASE 2: CloudWatch
+2026-06-10 00:17:10,388 [INFO] infra.monitoring: === Destruindo recursos de monitoramento ===
+2026-06-10 00:17:11,244 [INFO] infra.monitoring: Alarm 'dijkfood-alb-5xx-high' deletado
+2026-06-10 00:17:11,396 [INFO] infra.monitoring: Alarm 'dijkfood-alb-latency-p95' deletado
+2026-06-10 00:17:11,564 [INFO] infra.monitoring: Dashboard deletado
+2026-06-10 00:17:12,401 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-processor': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-10 00:17:12,546 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-management': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-10 00:17:12,700 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/position-tracker': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-10 00:17:12,843 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/conversational': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-10 00:17:12,986 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/ml-inference': An error occurred (ResourceNotFoundException) when calling the DeleteLogGroup operation: The specified log group does not exist.
+2026-06-10 00:17:12,987 [INFO] deploy: 
+🗑️  FASE 3: Streaming (Lambda, Firehose, Kinesis)
+2026-06-10 00:17:12,988 [INFO] infra.streaming: === Destruindo recursos de streaming ===
+2026-06-10 00:17:13,955 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-anomaly-detector': An error occurred (ResourceNotFoundException) when calling the DeleteFunction operation: Function not found: arn:aws:lambda:us-east-1:884474267760:function:dijkfood-anomaly-detector
+2026-06-10 00:17:14,160 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-firehose-transform': An error occurred (ResourceNotFoundException) when calling the DeleteFunction operation: Function not found: arn:aws:lambda:us-east-1:884474267760:function:dijkfood-firehose-transform
+2026-06-10 00:17:14,995 [WARNING] infra.streaming: Erro ao deletar Firehose: An error occurred (ResourceNotFoundException) when calling the DeleteDeliveryStream operation: Firehose under account 884474267760 not found.
+2026-06-10 00:17:15,842 [WARNING] infra.streaming: Erro ao deletar Kinesis stream: An error occurred (ResourceNotFoundException) when calling the DeleteStream operation: Stream dijkfood-events under account 884474267760 not found.
+2026-06-10 00:17:15,842 [INFO] deploy: 
+🗑️  FASE 4: Analytics (CloudFront, Glue, S3)
+2026-06-10 00:17:15,844 [INFO] infra.analytics: === Destruindo recursos analíticos ===
+2026-06-10 00:17:16,600 [WARNING] infra.analytics: Erro ao deletar Crawler: An error occurred (EntityNotFoundException) when calling the DeleteCrawler operation: Crawler entry with name dijkfood-crawler does not exist
+2026-06-10 00:17:16,827 [WARNING] infra.analytics: Erro ao deletar tabela Glue: An error occurred (EntityNotFoundException) when calling the DeleteTable operation: Database dijkfood_analytics not found.
+2026-06-10 00:17:17,048 [WARNING] infra.analytics: Erro ao deletar database Glue: An error occurred (EntityNotFoundException) when calling the DeleteDatabase operation: Database dijkfood_analytics not found.
+2026-06-10 00:17:17,048 [INFO] deploy: 
+🗑️  FASE 5: Bancos de Dados
+2026-06-10 00:17:17,053 [INFO] infra.database: === Destruindo RDS ===
+2026-06-10 00:17:17,930 [WARNING] infra.database: Erro ao deletar RDS: An error occurred (DBInstanceNotFound) when calling the DeleteDBInstance operation: DBInstance dijkfood-db not found.
+2026-06-10 00:17:18,133 [INFO] infra.database: DB Subnet Group deletado
+2026-06-10 00:17:18,133 [INFO] infra.database: === Destruindo tabelas DynamoDB ===
+2026-06-10 00:17:18,825 [WARNING] infra.database: Erro ao deletar tabela 'courier_positions': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: courier_positions not found
+2026-06-10 00:17:18,970 [WARNING] infra.database: Erro ao deletar tabela 'order_status_cache': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: order_status_cache not found
+2026-06-10 00:17:19,114 [WARNING] infra.database: Erro ao deletar tabela 'anomalies': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: anomalies not found
+2026-06-10 00:17:19,262 [WARNING] infra.database: Erro ao deletar tabela 'historical_averages': An error occurred (ResourceNotFoundException) when calling the DeleteTable operation: Requested resource not found: Table: historical_averages not found
+2026-06-10 00:17:19,263 [INFO] deploy: 
+🗑️  FASE 6: Rede (VPC)
+2026-06-10 00:17:19,264 [INFO] infra.vpc: === Destruindo VPC e infraestrutura de rede ===
+2026-06-10 00:17:20,246 [INFO] infra.vpc: NAT Gateway nat-06cced9229f0b9c23 deletado (aguardando...)
+2026-06-10 00:18:12,955 [INFO] infra.vpc: Elastic IP liberado
+2026-06-10 00:18:13,457 [INFO] infra.vpc: SG sg-052c1b3d11dade542 deletado
+2026-06-10 00:18:13,927 [INFO] infra.vpc: SG sg-07fe48a483e507065 deletado
+2026-06-10 00:18:14,396 [INFO] infra.vpc: SG sg-05f774fe5efc20f83 deletado
+2026-06-10 00:18:15,666 [INFO] infra.vpc: Route table rtb-000d365ad1997354f deletada
+2026-06-10 00:18:17,087 [INFO] infra.vpc: Route table rtb-0397b6436cdf5f759 deletada
+2026-06-10 00:18:17,758 [INFO] infra.vpc: IGW igw-0ddc749c474bb21bb deletado
+2026-06-10 00:18:18,416 [INFO] infra.vpc: Subnet subnet-0e3ea80c000435fe5 deletada
+2026-06-10 00:18:19,081 [INFO] infra.vpc: Subnet subnet-0584176111d59312e deletada
+2026-06-10 00:18:19,811 [INFO] infra.vpc: Subnet subnet-0a37659bcb75d470e deletada
+2026-06-10 00:18:20,481 [INFO] infra.vpc: Subnet subnet-0afb3596b394f446f deletada
+2026-06-10 00:18:21,065 [INFO] infra.vpc: VPC vpc-0e1af7fae6f61779a deletada
+2026-06-10 00:18:21,065 [INFO] infra.vpc: === VPC destruída ===
+2026-06-10 00:18:21,066 [INFO] deploy: 
+================================================================================
+2026-06-10 00:18:21,066 [INFO] deploy:    ✅ INFRAESTRUTURA DESTRUÍDA COM SUCESSO!
+2026-06-10 00:18:21,071 [INFO] deploy:    Tempo total: 1.8 minutos
+2026-06-10 00:18:21,071 [INFO] deploy: ================================================================================
+2026-06-10 00:18:29,172 [INFO] deploy: ================================================================================
+2026-06-10 00:18:29,174 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 00:18:29,174 [INFO] deploy: ================================================================================
+2026-06-10 00:18:29,232 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 00:18:31,600 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 00:18:31,600 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 00:18:31,600 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 00:18:31,603 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 00:18:34,209 [INFO] infra.vpc: VPC criada: vpc-0fa2701576ade8079
+2026-06-10 00:18:38,447 [INFO] infra.vpc: Subnets criadas
+2026-06-10 00:18:39,226 [INFO] infra.vpc: Internet Gateway criado: igw-00e465fa30d008638
+2026-06-10 00:18:41,663 [INFO] infra.vpc: NAT Gateway criado: nat-07ae3eccecb687329, aguardando ficar disponível...
+2026-06-10 00:20:28,078 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-10 00:20:31,417 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-10 00:20:34,913 [INFO] infra.vpc: Security Groups criados
+2026-06-10 00:20:34,914 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:20:34,915 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-10 00:20:34,916 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-10 00:20:36,757 [INFO] infra.database: DB Subnet Group criado
+2026-06-10 00:20:38,636 [INFO] infra.database: Instância RDS criada, aguardando disponibilidade...
+2026-06-10 00:35:49,814 [INFO] infra.database: RDS disponível: dijkfood-db.c8qic2tonppa.us-east-1.rds.amazonaws.com:5432
+2026-06-10 00:35:49,823 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:35:49,823 [INFO] infra.database: === Inicializando schema do PostgreSQL ===
+2026-06-10 00:35:49,840 [WARNING] infra.database: psql não encontrado, tentando via asyncpg...
+2026-06-10 00:35:53,620 [INFO] infra.database: Schema aplicado via asyncpg
+2026-06-10 00:35:53,632 [INFO] infra.database: === Criando tabelas DynamoDB ===
+2026-06-10 00:35:54,354 [INFO] infra.database: Tabela DynamoDB 'courier_positions' criada
+2026-06-10 00:35:54,516 [INFO] infra.database: Tabela DynamoDB 'order_status_cache' criada
+2026-06-10 00:35:54,693 [INFO] infra.database: Tabela DynamoDB 'anomalies' criada
+2026-06-10 00:35:54,869 [INFO] infra.database: Tabela DynamoDB 'historical_averages' criada
+2026-06-10 00:36:15,315 [INFO] infra.database: TTL habilitado em 'courier_positions'
+2026-06-10 00:36:15,503 [INFO] infra.database: DynamoDB Streams habilitado em 'courier_positions'
+2026-06-10 00:36:15,933 [INFO] infra.database: TTL habilitado em 'anomalies'
+2026-06-10 00:36:16,074 [INFO] infra.database: Tabelas DynamoDB criadas
+2026-06-10 00:36:16,078 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:16,078 [INFO] deploy: 
+🔧 FASE 3: S3, Glue, Athena
+2026-06-10 00:36:16,079 [INFO] infra.analytics: === Criando buckets S3 ===
+2026-06-10 00:36:17,515 [INFO] infra.analytics: Bucket 'dijkfood-data-lake-884474267760' criado: Data Lake — eventos brutos e processados
+2026-06-10 00:36:19,017 [INFO] infra.analytics: Bucket 'dijkfood-models-884474267760' criado: Modelos ML treinados
+2026-06-10 00:36:20,405 [INFO] infra.analytics: Bucket 'dijkfood-athena-results-884474267760' criado: Resultados de queries Athena
+2026-06-10 00:36:21,796 [INFO] infra.analytics: Bucket 'dijkfood-frontend-884474267760' criado: Frontend estático (static website hosting)
+2026-06-10 00:36:21,799 [WARNING] infra.analytics: Erro ao configurar website hosting: 'S3' object has no attribute 'put_bucket_website_configuration'
+2026-06-10 00:36:21,799 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:21,800 [INFO] infra.analytics: === Criando recursos AWS Glue ===
+2026-06-10 00:36:22,678 [INFO] infra.analytics: Glue database 'dijkfood_analytics' criado
+2026-06-10 00:36:23,192 [INFO] infra.analytics: Tabela Glue 'events' criada
+2026-06-10 00:36:23,599 [INFO] infra.analytics: Glue Crawler 'dijkfood-crawler' criado
+2026-06-10 00:36:24,482 [INFO] infra.analytics: Glue Crawler iniciado
+2026-06-10 00:36:24,483 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:24,483 [INFO] deploy: 
+🔧 FASE 4: Kinesis, Firehose, Lambda
+2026-06-10 00:36:24,484 [INFO] infra.streaming: === Criando Kinesis Data Stream ===
+2026-06-10 00:36:25,472 [INFO] infra.streaming: Kinesis stream 'dijkfood-events' criado
+2026-06-10 00:36:30,777 [INFO] infra.streaming: Kinesis stream ativo: arn:aws:kinesis:us-east-1:884474267760:stream/dijkfood-events
+2026-06-10 00:36:30,782 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:30,782 [INFO] infra.streaming: === Criando Kinesis Firehose ===
+2026-06-10 00:36:31,642 [ERROR] infra.streaming: Erro ao criar Firehose: An error occurred (InvalidArgumentException) when calling the CreateDeliveryStream operation: BufferingHints.SizeInMBs must be at least 64 when data format conversion is enabled.
+2026-06-10 00:36:31,642 [INFO] infra.streaming: Tentando criar Firehose sem conversão Parquet...
+2026-06-10 00:36:32,580 [INFO] infra.streaming: Firehose criado com GZIP (fallback)
+2026-06-10 00:36:32,581 [INFO] infra.streaming: === Criando Lambda Anomaly Detector ===
+2026-06-10 00:36:34,081 [INFO] infra.streaming: Lambda 'dijkfood-anomaly-detector' criada
+2026-06-10 00:36:39,510 [INFO] infra.streaming: Event Source Mapping criado: Kinesis → Lambda
+2026-06-10 00:36:39,520 [INFO] infra.streaming: === Criando Lambda Firehose Transform ===
+2026-06-10 00:36:40,046 [INFO] infra.streaming: Lambda 'dijkfood-firehose-transform' criada
+2026-06-10 00:36:40,047 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:40,047 [INFO] deploy: 
+🔧 FASE 5: CloudWatch Monitoring
+2026-06-10 00:36:40,048 [INFO] infra.monitoring: === Criando CloudWatch Log Groups ===
+2026-06-10 00:36:41,056 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/order-processor
+2026-06-10 00:36:41,453 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/order-management
+2026-06-10 00:36:41,755 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/position-tracker
+2026-06-10 00:36:42,058 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/conversational
+2026-06-10 00:36:42,375 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/ml-inference
+2026-06-10 00:36:42,376 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push
+2026-06-10 00:36:42,377 [INFO] infra.compute: === Criando repositórios ECR ===
+2026-06-10 00:36:43,305 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor
+2026-06-10 00:36:43,537 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-management
+2026-06-10 00:36:43,730 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/position-tracker
+2026-06-10 00:36:43,952 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/conversational
+2026-06-10 00:36:44,146 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/ml-inference
+2026-06-10 00:36:44,149 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 00:36:44,149 [INFO] infra.compute: === Build & Push de imagens Docker ===
+2026-06-10 00:36:48,223 [INFO] infra.compute: Login no ECR realizado
+2026-06-10 00:36:48,223 [INFO] infra.compute: Building order-processor...
+2026-06-10 00:36:48,889 [ERROR] deploy: ERRO FATAL durante criação: Command '['docker', 'build', '-t', '884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest', 'C:\\Users\\guibu\\OneDrive - Fundacao Getulio Vargas - FGV\\7o PERÍODO\\Computação em Nuvem\\DijkFoodRemake\\services\\order-processor']' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 222, in create_all
+    build_and_push_images(ecr, repos, account_id)
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\compute.py", line 131, in build_and_push_images
+    subprocess.run(
+  File "C:\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'build', '-t', '884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest', 'C:\\Users\\guibu\\OneDrive - Fundacao Getulio Vargas - FGV\\7o PERÍODO\\Computação em Nuvem\\DijkFoodRemake\\services\\order-processor']' returned non-zero exit status 1.
+2026-06-10 00:36:48,892 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:01:34,652 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:01:35,214 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:03:56,139 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:03:56,241 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:04:22,332 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:04:22,393 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:04:24,451 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push
+2026-06-10 02:04:24,455 [INFO] infra.compute: === Build & Push de imagens Docker ===
+2026-06-10 02:04:30,692 [INFO] infra.compute: Login no ECR realizado
+2026-06-10 02:04:30,693 [INFO] infra.compute: Building order-processor...
+2026-06-10 02:06:57,011 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:06:57,156 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:06:59,481 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push
+2026-06-10 02:06:59,486 [INFO] infra.compute: === Build & Push de imagens Docker ===
+2026-06-10 02:07:04,634 [INFO] infra.compute: Login no ECR realizado
+2026-06-10 02:07:04,634 [INFO] infra.compute: Building order-processor...
+2026-06-10 02:34:36,024 [INFO] infra.compute: Pushing order-processor...
+2026-06-10 02:39:14,953 [INFO] infra.compute: Imagem order-processor pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest
+2026-06-10 02:39:14,966 [INFO] infra.compute: Building order-management...
+2026-06-10 02:39:37,377 [INFO] infra.compute: Pushing order-management...
+2026-06-10 02:39:43,940 [INFO] infra.compute: Imagem order-management pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-management:latest
+2026-06-10 02:39:43,940 [INFO] infra.compute: Building position-tracker...
+2026-06-10 02:40:00,127 [INFO] infra.compute: Pushing position-tracker...
+2026-06-10 02:40:06,011 [INFO] infra.compute: Imagem position-tracker pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/position-tracker:latest
+2026-06-10 02:40:06,012 [INFO] infra.compute: Building conversational...
+2026-06-10 02:40:33,569 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:40:33,704 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:40:36,217 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push
+2026-06-10 02:40:36,222 [INFO] infra.compute: === Build & Push de imagens Docker ===
+2026-06-10 02:40:41,823 [INFO] infra.compute: Login no ECR realizado
+2026-06-10 02:40:41,823 [INFO] infra.compute: Building order-processor...
+2026-06-10 02:40:43,322 [INFO] infra.compute: Pushing order-processor...
+2026-06-10 02:40:46,172 [INFO] infra.compute: Imagem order-processor pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest
+2026-06-10 02:40:46,172 [INFO] infra.compute: Building order-management...
+2026-06-10 02:40:47,191 [INFO] infra.compute: Pushing order-management...
+2026-06-10 02:40:49,968 [INFO] infra.compute: Imagem order-management pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-management:latest
+2026-06-10 02:40:49,968 [INFO] infra.compute: Building position-tracker...
+2026-06-10 02:40:50,967 [INFO] infra.compute: Pushing position-tracker...
+2026-06-10 02:40:53,717 [INFO] infra.compute: Imagem position-tracker pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/position-tracker:latest
+2026-06-10 02:40:53,717 [INFO] infra.compute: Building conversational...
+2026-06-10 02:41:55,722 [INFO] infra.compute: Pushing conversational...
+2026-06-10 02:42:04,143 [INFO] infra.compute: Imagem conversational pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/conversational:latest
+2026-06-10 02:42:04,144 [INFO] infra.compute: Building ml-inference...
+2026-06-10 02:43:21,974 [INFO] infra.compute: Pushing ml-inference...
+2026-06-10 02:43:36,472 [INFO] infra.compute: Imagem ml-inference pushed: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/ml-inference:latest
+2026-06-10 02:43:36,477 [INFO] deploy: 
+🔧 FASE 7: ECS Cluster, Task Definitions, ALB, Services
+2026-06-10 02:43:36,510 [INFO] infra.compute: === Criando ECS Cluster ===
+2026-06-10 02:43:37,662 [INFO] infra.compute: ECS Cluster criado: arn:aws:ecs:us-east-1:884474267760:cluster/dijkfood-cluster
+2026-06-10 02:43:37,668 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:43:37,669 [INFO] infra.compute: === Criando Application Load Balancer ===
+2026-06-10 02:43:39,307 [INFO] infra.compute: ALB criado: dijkfood-alb-1113476597.us-east-1.elb.amazonaws.com
+2026-06-10 02:45:59,269 [INFO] infra.compute: Target Group criado: tg-order-processor
+2026-06-10 02:45:59,600 [INFO] infra.compute: Target Group criado: tg-order-management
+2026-06-10 02:45:59,922 [INFO] infra.compute: Target Group criado: tg-position-tracker
+2026-06-10 02:46:00,230 [INFO] infra.compute: Target Group criado: tg-conversational
+2026-06-10 02:46:00,581 [INFO] infra.compute: Target Group criado: tg-ml-inference
+2026-06-10 02:46:00,812 [INFO] infra.compute: Listener HTTP:80 criado
+2026-06-10 02:47:38,519 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:47:38,615 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:47:41,058 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push (SKIPPED)
+2026-06-10 02:47:41,063 [INFO] deploy: 
+🔧 FASE 7: ECS Cluster, Task Definitions, ALB, Services
+2026-06-10 02:47:41,064 [INFO] infra.compute: === Criando ECS Cluster ===
+2026-06-10 02:47:42,150 [INFO] infra.compute: ECS Cluster criado: arn:aws:ecs:us-east-1:884474267760:cluster/dijkfood-cluster
+2026-06-10 02:47:42,152 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:47:42,153 [INFO] infra.compute: === Criando Application Load Balancer ===
+2026-06-10 02:47:43,793 [INFO] infra.compute: ALB criado: dijkfood-alb-518094977.us-east-1.elb.amazonaws.com
+2026-06-10 02:50:01,151 [INFO] infra.compute: Target Group criado: tg-order-processor
+2026-06-10 02:50:01,472 [INFO] infra.compute: Target Group criado: tg-order-management
+2026-06-10 02:50:01,821 [INFO] infra.compute: Target Group criado: tg-position-tracker
+2026-06-10 02:50:02,149 [INFO] infra.compute: Target Group criado: tg-conversational
+2026-06-10 02:50:02,488 [INFO] infra.compute: Target Group criado: tg-ml-inference
+2026-06-10 02:50:02,675 [INFO] infra.compute: Listener HTTP:80 criado
+2026-06-10 02:50:02,865 [INFO] infra.compute: Listener Rule criada: ['/api/orders', '/api/orders/*'] → order-processor
+2026-06-10 02:51:15,316 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 02:51:15,372 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 02:51:17,745 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push (SKIPPED)
+2026-06-10 02:51:17,748 [INFO] deploy: 
+🔧 FASE 7: ECS Cluster, Task Definitions, ALB, Services
+2026-06-10 02:51:17,749 [INFO] infra.compute: === Criando ECS Cluster ===
+2026-06-10 02:51:18,756 [INFO] infra.compute: ECS Cluster criado: arn:aws:ecs:us-east-1:884474267760:cluster/dijkfood-cluster
+2026-06-10 02:51:18,758 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:51:18,758 [INFO] infra.compute: === Criando Application Load Balancer ===
+2026-06-10 02:51:20,395 [INFO] infra.compute: ALB criado: dijkfood-alb-603222438.us-east-1.elb.amazonaws.com
+2026-06-10 02:54:23,216 [INFO] infra.compute: Target Group criado: tg-order-processor
+2026-06-10 02:54:23,525 [INFO] infra.compute: Target Group criado: tg-order-management
+2026-06-10 02:54:23,861 [INFO] infra.compute: Target Group criado: tg-position-tracker
+2026-06-10 02:54:24,196 [INFO] infra.compute: Target Group criado: tg-conversational
+2026-06-10 02:54:24,496 [INFO] infra.compute: Target Group criado: tg-ml-inference
+2026-06-10 02:54:24,710 [INFO] infra.compute: Listener HTTP:80 criado
+2026-06-10 02:54:24,899 [INFO] infra.compute: Listener Rule criada: ['/api/orders*'] → order-processor
+2026-06-10 02:54:25,112 [INFO] infra.compute: Listener Rule criada: ['/api/customers*', '/api/restaurants*', '/api/couriers*'] → order-management
+2026-06-10 02:54:25,299 [INFO] infra.compute: Listener Rule criada: ['/api/positions*'] → position-tracker
+2026-06-10 02:54:25,483 [INFO] infra.compute: Listener Rule criada: ['/api/chat*'] → conversational
+2026-06-10 02:54:25,668 [INFO] infra.compute: Listener Rule criada: ['/api/predictions*'] → ml-inference
+2026-06-10 02:54:25,670 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:54:25,671 [INFO] infra.compute: === Criando Task Definitions ===
+2026-06-10 02:54:26,667 [INFO] infra.compute: Task Definition criada: order-processor — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-processor:1
+2026-06-10 02:54:26,873 [INFO] infra.compute: Task Definition criada: order-management — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-management:1
+2026-06-10 02:54:27,068 [INFO] infra.compute: Task Definition criada: position-tracker — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-position-tracker:1
+2026-06-10 02:54:27,262 [INFO] infra.compute: Task Definition criada: conversational — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-conversational:1
+2026-06-10 02:54:27,453 [INFO] infra.compute: Task Definition criada: ml-inference — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-ml-inference:1
+2026-06-10 02:54:27,463 [INFO] infra.compute: === Criando ECS Services ===
+2026-06-10 02:54:28,309 [INFO] infra.compute: ECS Service criado: order-processor
+2026-06-10 02:54:29,066 [INFO] infra.compute: ECS Service criado: order-management
+2026-06-10 02:54:29,788 [INFO] infra.compute: ECS Service criado: position-tracker
+2026-06-10 02:54:30,541 [INFO] infra.compute: ECS Service criado: conversational
+2026-06-10 02:54:31,293 [INFO] infra.compute: ECS Service criado: ml-inference
+2026-06-10 02:54:31,295 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:54:31,296 [INFO] deploy: 
+🔧 FASE 8: Auto Scaling
+2026-06-10 02:54:31,297 [INFO] infra.compute: === Configurando Auto Scaling ===
+2026-06-10 02:54:32,857 [INFO] infra.compute: Auto Scaling configurado: order-processor (target CPU 70%)
+2026-06-10 02:54:33,646 [INFO] infra.compute: Auto Scaling configurado: order-management (target CPU 70%)
+2026-06-10 02:54:34,407 [INFO] infra.compute: Auto Scaling configurado: position-tracker (target CPU 60%)
+2026-06-10 02:54:35,206 [INFO] infra.compute: Auto Scaling configurado: conversational (target CPU 70%)
+2026-06-10 02:54:35,963 [INFO] infra.compute: Auto Scaling configurado: ml-inference (target CPU 70%)
+2026-06-10 02:54:35,964 [INFO] deploy: 
+🔧 FASE 9: Alarmes e Dashboard CloudWatch
+2026-06-10 02:54:35,965 [INFO] infra.monitoring: === Criando CloudWatch Alarms ===
+2026-06-10 02:54:36,914 [INFO] infra.monitoring: Alarm criado: dijkfood-alb-5xx-high
+2026-06-10 02:54:37,135 [INFO] infra.monitoring: Alarm criado: dijkfood-alb-latency-p95
+2026-06-10 02:54:37,141 [INFO] infra.monitoring: === Criando CloudWatch Dashboard ===
+2026-06-10 02:54:37,393 [INFO] infra.monitoring: Dashboard 'DijkFood-Operational' criado
+2026-06-10 02:54:37,394 [INFO] deploy: 
+🔧 FASE 10: CloudFront (Camada de Apresentação)
+2026-06-10 02:54:37,394 [INFO] infra.analytics: === Criando distribuição CloudFront ===
+2026-06-10 02:54:38,271 [ERROR] infra.analytics: Erro ao criar CloudFront: An error occurred (AccessDenied) when calling the CreateDistribution operation: User: arn:aws:sts::884474267760:assumed-role/voclabs/user4889220=guilherme.buss.silva@gmail.com is not authorized to perform: cloudfront:CreateDistribution on resource: arn:aws:cloudfront::884474267760:distribution/* because no identity-based policy allows the cloudfront:CreateDistribution action
+2026-06-10 02:54:38,274 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 02:54:38,274 [INFO] deploy: === Upload do Frontend para S3 ===
+2026-06-10 02:54:40,209 [INFO] deploy: Frontend configurado para usar a API: http://dijkfood-alb-603222438.us-east-1.elb.amazonaws.com
+2026-06-10 02:54:40,210 [INFO] deploy: Upload de arquivos do frontend concluído com sucesso
+2026-06-10 02:54:40,210 [INFO] deploy: 
+⏳ FASE 11: Aguardando estabilização dos serviços...
+2026-06-10 02:54:40,211 [INFO] infra.compute: === Aguardando estabilização dos serviços ECS ===
+2026-06-10 02:56:33,173 [INFO] infra.compute: Todos os serviços ECS estáveis!
+2026-06-10 02:56:33,174 [INFO] deploy: 
+================================================================================
+2026-06-10 02:56:33,174 [INFO] deploy: ✅ DEPLOY CONCLUÍDO COM SUCESSO!
+2026-06-10 02:56:33,175 [INFO] deploy: ================================================================================
+2026-06-10 02:56:33,175 [INFO] deploy: 📍 ALB (Backend): http://dijkfood-alb-603222438.us-east-1.elb.amazonaws.com
+2026-06-10 06:46:53,179 [INFO] deploy: ================================================================================
+2026-06-10 06:46:53,179 [INFO] deploy:    DijkFood A2 — DESTRUIÇÃO DE INFRAESTRUTURA
+2026-06-10 06:46:53,179 [INFO] deploy: ================================================================================
+2026-06-10 06:46:53,251 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-10 06:46:54,253 [INFO] deploy: 
+🗑️  FASE 1: Auto Scaling, ECS Services, ALB, ECR
+2026-06-10 06:46:54,254 [INFO] infra.compute: === Destruindo recursos de computação ===
+2026-06-10 06:46:55,148 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-processor: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:55,963 [WARNING] infra.compute: Erro ao remover Auto Scaling de order-management: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:56,760 [WARNING] infra.compute: Erro ao remover Auto Scaling de position-tracker: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:57,568 [WARNING] infra.compute: Erro ao remover Auto Scaling de conversational: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:58,372 [WARNING] infra.compute: Erro ao remover Auto Scaling de ml-inference: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:59,177 [WARNING] infra.compute: Erro ao remover Auto Scaling de dashboard-analytics: An error occurred (UnrecognizedClientException) when calling the DeregisterScalableTarget operation: The security token included in the request is invalid.
+2026-06-10 06:46:59,998 [WARNING] infra.compute: Erro ao deletar service order-processor: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:00,795 [WARNING] infra.compute: Erro ao deletar service order-management: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:01,610 [WARNING] infra.compute: Erro ao deletar service position-tracker: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:02,428 [WARNING] infra.compute: Erro ao deletar service conversational: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:03,216 [WARNING] infra.compute: Erro ao deletar service ml-inference: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:04,034 [WARNING] infra.compute: Erro ao deletar service dashboard-analytics: An error occurred (UnrecognizedClientException) when calling the UpdateService operation: The security token included in the request is invalid.
+2026-06-10 06:47:35,690 [WARNING] infra.compute: Erro ao deletar ALB: An error occurred (InvalidClientTokenId) when calling the DeleteLoadBalancer operation: The security token included in the request is invalid.
+2026-06-10 06:47:41,286 [WARNING] infra.compute: Erro ao deletar cluster: An error occurred (UnrecognizedClientException) when calling the DeleteCluster operation: The security token included in the request is invalid.
+2026-06-10 06:47:42,798 [INFO] deploy: 
+🗑️  FASE 2: CloudWatch
+2026-06-10 06:47:42,798 [INFO] infra.monitoring: === Destruindo recursos de monitoramento ===
+2026-06-10 06:47:43,604 [WARNING] infra.monitoring: Erro ao deletar alarm: An error occurred (InvalidClientTokenId) when calling the DeleteAlarms operation: The security token included in the request is invalid.
+2026-06-10 06:47:43,742 [WARNING] infra.monitoring: Erro ao deletar alarm: An error occurred (InvalidClientTokenId) when calling the DeleteAlarms operation: The security token included in the request is invalid.
+2026-06-10 06:47:43,885 [WARNING] infra.monitoring: Erro ao deletar dashboard: An error occurred (InvalidClientTokenId) when calling the DeleteDashboards operation: The security token included in the request is invalid.
+2026-06-10 06:47:44,701 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-processor': An error occurred (UnrecognizedClientException) when calling the DeleteLogGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:44,832 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/order-management': An error occurred (UnrecognizedClientException) when calling the DeleteLogGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:44,983 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/position-tracker': An error occurred (UnrecognizedClientException) when calling the DeleteLogGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:45,120 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/conversational': An error occurred (UnrecognizedClientException) when calling the DeleteLogGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:45,254 [WARNING] infra.monitoring: Erro ao deletar log group '/ecs/dijkfood/ml-inference': An error occurred (UnrecognizedClientException) when calling the DeleteLogGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:45,254 [INFO] deploy: 
+🗑️  FASE 3: Streaming (Lambda, Firehose, Kinesis)
+2026-06-10 06:47:45,254 [INFO] infra.streaming: === Destruindo recursos de streaming ===
+2026-06-10 06:47:45,947 [WARNING] infra.streaming: Erro ao deletar event source mappings: An error occurred (UnrecognizedClientException) when calling the ListEventSourceMappings operation: The security token included in the request is invalid.
+2026-06-10 06:47:46,091 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-anomaly-detector': An error occurred (UnrecognizedClientException) when calling the DeleteFunction operation: The security token included in the request is invalid.
+2026-06-10 06:47:46,232 [WARNING] infra.streaming: Erro ao deletar Lambda 'dijkfood-firehose-transform': An error occurred (UnrecognizedClientException) when calling the DeleteFunction operation: The security token included in the request is invalid.
+2026-06-10 06:47:47,041 [WARNING] infra.streaming: Erro ao deletar Firehose: An error occurred (UnrecognizedClientException) when calling the DeleteDeliveryStream operation: The security token included in the request is invalid.
+2026-06-10 06:47:47,852 [WARNING] infra.streaming: Erro ao deletar Kinesis stream: An error occurred (UnrecognizedClientException) when calling the DeleteStream operation: The security token included in the request is invalid.
+2026-06-10 06:47:47,852 [INFO] deploy: 
+🗑️  FASE 4: Analytics (CloudFront, Glue, S3)
+2026-06-10 06:47:47,852 [INFO] infra.analytics: === Destruindo recursos analíticos ===
+2026-06-10 06:47:48,543 [WARNING] infra.analytics: Erro ao deletar Crawler: An error occurred (UnrecognizedClientException) when calling the DeleteCrawler operation: The security token included in the request is invalid.
+2026-06-10 06:47:48,688 [WARNING] infra.analytics: Erro ao deletar tabela Glue: An error occurred (UnrecognizedClientException) when calling the DeleteTable operation: The security token included in the request is invalid.
+2026-06-10 06:47:48,844 [WARNING] infra.analytics: Erro ao deletar database Glue: An error occurred (UnrecognizedClientException) when calling the DeleteDatabase operation: The security token included in the request is invalid.
+2026-06-10 06:47:49,650 [WARNING] infra.analytics: Erro ao esvaziar bucket 'dijkfood-data-lake-884474267760': An error occurred (InvalidAccessKeyId) when calling the ListObjectVersions operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:49,801 [WARNING] infra.analytics: Erro ao deletar bucket 'dijkfood-data-lake-884474267760': An error occurred (InvalidAccessKeyId) when calling the DeleteBucket operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:50,482 [WARNING] infra.analytics: Erro ao esvaziar bucket 'dijkfood-models-884474267760': An error occurred (InvalidAccessKeyId) when calling the ListObjectVersions operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:50,627 [WARNING] infra.analytics: Erro ao deletar bucket 'dijkfood-models-884474267760': An error occurred (InvalidAccessKeyId) when calling the DeleteBucket operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:51,318 [WARNING] infra.analytics: Erro ao esvaziar bucket 'dijkfood-athena-results-884474267760': An error occurred (InvalidAccessKeyId) when calling the ListObjectVersions operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:51,462 [WARNING] infra.analytics: Erro ao deletar bucket 'dijkfood-athena-results-884474267760': An error occurred (InvalidAccessKeyId) when calling the DeleteBucket operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:52,161 [WARNING] infra.analytics: Erro ao esvaziar bucket 'dijkfood-frontend-884474267760': An error occurred (InvalidAccessKeyId) when calling the ListObjectVersions operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:52,322 [WARNING] infra.analytics: Erro ao deletar bucket 'dijkfood-frontend-884474267760': An error occurred (InvalidAccessKeyId) when calling the DeleteBucket operation: The AWS Access Key Id you provided does not exist in our records.
+2026-06-10 06:47:52,322 [INFO] deploy: 
+🗑️  FASE 5: Bancos de Dados
+2026-06-10 06:47:52,322 [INFO] infra.database: === Destruindo RDS ===
+2026-06-10 06:47:53,422 [WARNING] infra.database: Erro ao deletar RDS: An error occurred (InvalidClientTokenId) when calling the DeleteDBInstance operation: The security token included in the request is invalid.
+2026-06-10 06:47:53,560 [WARNING] infra.database: Erro ao deletar DB Subnet Group: An error occurred (InvalidClientTokenId) when calling the DeleteDBSubnetGroup operation: The security token included in the request is invalid.
+2026-06-10 06:47:53,560 [INFO] infra.database: === Destruindo tabelas DynamoDB ===
+2026-06-10 06:47:54,242 [WARNING] infra.database: Erro ao deletar tabela 'courier_positions': An error occurred (UnrecognizedClientException) when calling the DeleteTable operation: The security token included in the request is invalid.
+2026-06-10 06:47:54,376 [WARNING] infra.database: Erro ao deletar tabela 'order_status_cache': An error occurred (UnrecognizedClientException) when calling the DeleteTable operation: The security token included in the request is invalid.
+2026-06-10 06:47:54,529 [WARNING] infra.database: Erro ao deletar tabela 'anomalies': An error occurred (UnrecognizedClientException) when calling the DeleteTable operation: The security token included in the request is invalid.
+2026-06-10 06:47:54,663 [WARNING] infra.database: Erro ao deletar tabela 'historical_averages': An error occurred (UnrecognizedClientException) when calling the DeleteTable operation: The security token included in the request is invalid.
+2026-06-10 06:47:54,663 [INFO] deploy: 
+🗑️  FASE 6: Rede (VPC)
+2026-06-10 06:47:54,663 [INFO] infra.vpc: === Destruindo VPC e infraestrutura de rede ===
+2026-06-10 06:47:55,492 [WARNING] infra.vpc: Erro ao deletar NAT GW: An error occurred (AuthFailure) when calling the DeleteNatGateway operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:55,630 [WARNING] infra.vpc: Erro ao liberar EIP: An error occurred (AuthFailure) when calling the ReleaseAddress operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:55,769 [WARNING] infra.vpc: Erro ao deletar SG sg_rds_id: An error occurred (AuthFailure) when calling the DeleteSecurityGroup operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:55,907 [WARNING] infra.vpc: Erro ao deletar SG sg_ecs_id: An error occurred (AuthFailure) when calling the DeleteSecurityGroup operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,147 [WARNING] infra.vpc: Erro ao deletar SG sg_alb_id: An error occurred (AuthFailure) when calling the DeleteSecurityGroup operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,285 [WARNING] infra.vpc: Erro ao deletar RT rtb-07e880980e43539c4: An error occurred (AuthFailure) when calling the DescribeRouteTables operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,422 [WARNING] infra.vpc: Erro ao deletar RT rtb-0f82cf8d88c54e22b: An error occurred (AuthFailure) when calling the DescribeRouteTables operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,560 [WARNING] infra.vpc: Erro ao deletar IGW: An error occurred (AuthFailure) when calling the DetachInternetGateway operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,705 [WARNING] infra.vpc: Erro ao deletar subnet subnet-0b17f290213c8910f: An error occurred (AuthFailure) when calling the DeleteSubnet operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,842 [WARNING] infra.vpc: Erro ao deletar subnet subnet-0ff72b6e86e825a02: An error occurred (AuthFailure) when calling the DeleteSubnet operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:56,974 [WARNING] infra.vpc: Erro ao deletar subnet subnet-028700907a7a8f682: An error occurred (AuthFailure) when calling the DeleteSubnet operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:57,116 [WARNING] infra.vpc: Erro ao deletar subnet subnet-0e28a87882efc3b09: An error occurred (AuthFailure) when calling the DeleteSubnet operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:57,256 [WARNING] infra.vpc: Erro ao deletar VPC: An error occurred (AuthFailure) when calling the DeleteVpc operation: AWS was not able to validate the provided access credentials
+2026-06-10 06:47:57,256 [INFO] infra.vpc: === VPC destruída ===
+2026-06-10 06:47:57,256 [INFO] deploy: 
+================================================================================
+2026-06-10 06:47:57,256 [INFO] deploy:    ✅ INFRAESTRUTURA DESTRUÍDA COM SUCESSO!
+2026-06-10 06:47:57,260 [INFO] deploy:    Tempo total: 1.1 minutos
+2026-06-10 06:47:57,260 [INFO] deploy: ================================================================================
+2026-06-10 06:48:56,915 [INFO] deploy: ================================================================================
+2026-06-10 06:48:56,915 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 06:48:56,915 [INFO] deploy: ================================================================================
+2026-06-10 06:48:56,971 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-10 06:48:58,285 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-10 06:48:58,308 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 06:51:30,329 [INFO] deploy: ================================================================================
+2026-06-10 06:51:30,329 [INFO] deploy:    DijkFood A2 — DESTRUIÇÃO DE INFRAESTRUTURA
+2026-06-10 06:51:30,329 [INFO] deploy: ================================================================================
+2026-06-10 06:51:30,329 [WARNING] deploy: Nenhum estado encontrado. Nada para destruir.
+2026-06-10 06:51:38,209 [INFO] deploy: ================================================================================
+2026-06-10 06:51:38,209 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 06:51:38,209 [INFO] deploy: ================================================================================
+2026-06-10 06:51:38,273 [INFO] botocore.credentials: Found credentials in environment variables.
+2026-06-10 06:51:39,670 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 168, in create_all
+    account_id = get_account_id()
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 137, in get_account_id
+    return sts.get_caller_identity()["Account"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (InvalidClientTokenId) when calling the GetCallerIdentity operation: The security token included in the request is invalid.
+2026-06-10 06:51:39,671 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 06:53:34,579 [INFO] deploy: ================================================================================
+2026-06-10 06:53:34,580 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 06:53:34,580 [INFO] deploy: ================================================================================
+2026-06-10 06:53:34,635 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 06:53:36,784 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 06:53:36,784 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 06:53:36,784 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 06:53:36,784 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 06:53:37,678 [ERROR] deploy: ERRO FATAL durante criação: An error occurred (VpcLimitExceeded) when calling the CreateVpc operation: The maximum number of VPCs has been reached.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 175, in create_all
+    vpc_config = create_vpc(ec2)
+                 ^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\vpc.py", line 17, in create_vpc
+    vpc = ec2_client.create_vpc(CidrBlock="10.0.0.0/16")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 569, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\venv\Lib\site-packages\botocore\client.py", line 1023, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (VpcLimitExceeded) when calling the CreateVpc operation: The maximum number of VPCs has been reached.
+2026-06-10 06:53:37,678 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:26:31,333 [INFO] deploy: ================================================================================
+2026-06-10 07:26:31,334 [INFO] deploy:    DijkFood A2 — CRIAÇÃO DE INFRAESTRUTURA COMPLETA
+2026-06-10 07:26:31,334 [INFO] deploy: ================================================================================
+2026-06-10 07:26:31,401 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 07:26:33,670 [INFO] deploy: Conta AWS: 884474267760
+2026-06-10 07:26:33,670 [INFO] deploy: LabRole ARN: arn:aws:iam::884474267760:role/LabRole
+2026-06-10 07:26:33,671 [INFO] deploy: 
+🔧 FASE 1: Rede (VPC, Subnets, SGs)
+2026-06-10 07:26:33,671 [INFO] infra.vpc: === Criando VPC e infraestrutura de rede ===
+2026-06-10 07:26:36,156 [INFO] infra.vpc: VPC criada: vpc-0c4c69abaa62b7754
+2026-06-10 07:26:41,306 [INFO] infra.vpc: Subnets criadas
+2026-06-10 07:26:42,095 [INFO] infra.vpc: Internet Gateway criado: igw-0223ef56c93b6ad50
+2026-06-10 07:26:44,617 [INFO] infra.vpc: NAT Gateway criado: nat-04e811de864425d5f, aguardando ficar disponível...
+2026-06-10 07:28:46,160 [INFO] infra.vpc: NAT Gateway disponível
+2026-06-10 07:28:49,507 [INFO] infra.vpc: Route tables criadas e associadas
+2026-06-10 07:28:53,007 [INFO] infra.vpc: Security Groups criados
+2026-06-10 07:28:53,007 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:28:53,007 [INFO] deploy: 
+🔧 FASE 2: Bancos de Dados (RDS, DynamoDB)
+2026-06-10 07:28:53,007 [INFO] infra.database: === Criando RDS PostgreSQL ===
+2026-06-10 07:28:54,830 [INFO] infra.database: DB Subnet Group criado
+2026-06-10 07:28:56,796 [INFO] infra.database: Instância RDS criada, aguardando disponibilidade...
+2026-06-10 07:44:14,693 [INFO] infra.database: RDS disponível: dijkfood-db.c8qic2tonppa.us-east-1.rds.amazonaws.com:5432
+2026-06-10 07:44:14,712 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:44:14,714 [INFO] infra.database: === Inicializando schema do PostgreSQL ===
+2026-06-10 07:44:14,769 [WARNING] infra.database: psql não encontrado, tentando via asyncpg...
+2026-06-10 07:44:19,597 [INFO] infra.database: Schema aplicado via asyncpg
+2026-06-10 07:44:19,606 [INFO] infra.database: === Criando tabelas DynamoDB ===
+2026-06-10 07:44:20,671 [INFO] infra.database: Tabela DynamoDB 'courier_positions' criada
+2026-06-10 07:44:20,844 [INFO] infra.database: Tabela DynamoDB 'order_status_cache' criada
+2026-06-10 07:44:21,018 [INFO] infra.database: Tabela DynamoDB 'anomalies' criada
+2026-06-10 07:44:21,189 [INFO] infra.database: Tabela DynamoDB 'historical_averages' criada
+2026-06-10 07:44:41,679 [INFO] infra.database: TTL habilitado em 'courier_positions'
+2026-06-10 07:44:41,863 [INFO] infra.database: DynamoDB Streams habilitado em 'courier_positions'
+2026-06-10 07:44:42,297 [INFO] infra.database: TTL habilitado em 'anomalies'
+2026-06-10 07:44:42,444 [INFO] infra.database: Tabelas DynamoDB criadas
+2026-06-10 07:44:42,446 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:44:42,447 [INFO] deploy: 
+🔧 FASE 3: S3, Glue, Athena
+2026-06-10 07:44:42,448 [INFO] infra.analytics: === Criando buckets S3 ===
+2026-06-10 07:44:44,250 [INFO] infra.analytics: Bucket 'dijkfood-data-lake-884474267760' criado: Data Lake — eventos brutos e processados
+2026-06-10 07:44:46,107 [INFO] infra.analytics: Bucket 'dijkfood-models-884474267760' criado: Modelos ML treinados
+2026-06-10 07:44:47,798 [INFO] infra.analytics: Bucket 'dijkfood-athena-results-884474267760' criado: Resultados de queries Athena
+2026-06-10 07:44:49,560 [INFO] infra.analytics: Bucket 'dijkfood-frontend-884474267760' criado: Frontend estático (static website hosting)
+2026-06-10 07:44:49,560 [WARNING] infra.analytics: Erro ao configurar website hosting: 'S3' object has no attribute 'put_bucket_website_configuration'
+2026-06-10 07:44:49,560 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:44:49,564 [INFO] infra.analytics: === Criando recursos AWS Glue ===
+2026-06-10 07:44:50,770 [INFO] infra.analytics: Glue database 'dijkfood_analytics' criado
+2026-06-10 07:44:51,086 [INFO] infra.analytics: Tabela Glue 'events' criada
+2026-06-10 07:44:51,513 [INFO] infra.analytics: Glue Crawler 'dijkfood-crawler' criado
+2026-06-10 07:44:52,069 [INFO] infra.analytics: Glue Crawler iniciado
+2026-06-10 07:44:52,071 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:44:52,072 [INFO] deploy: 
+🔧 FASE 4: Kinesis, Firehose, Lambda
+2026-06-10 07:44:52,077 [INFO] infra.streaming: === Criando Kinesis Data Stream ===
+2026-06-10 07:44:53,309 [INFO] infra.streaming: Kinesis stream 'dijkfood-events' criado
+2026-06-10 07:44:58,632 [INFO] infra.streaming: Kinesis stream ativo: arn:aws:kinesis:us-east-1:884474267760:stream/dijkfood-events
+2026-06-10 07:44:58,635 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:44:58,636 [INFO] infra.streaming: === Criando Kinesis Firehose ===
+2026-06-10 07:44:59,799 [ERROR] infra.streaming: Erro ao criar Firehose: An error occurred (InvalidArgumentException) when calling the CreateDeliveryStream operation: BufferingHints.SizeInMBs must be at least 64 when data format conversion is enabled.
+2026-06-10 07:44:59,799 [INFO] infra.streaming: Tentando criar Firehose sem conversão Parquet...
+2026-06-10 07:45:01,066 [INFO] infra.streaming: Firehose criado com GZIP (fallback)
+2026-06-10 07:45:01,066 [INFO] infra.streaming: === Criando Lambda Anomaly Detector ===
+2026-06-10 07:45:02,746 [INFO] infra.streaming: Lambda 'dijkfood-anomaly-detector' criada
+2026-06-10 07:45:08,277 [INFO] infra.streaming: Event Source Mapping criado: Kinesis → Lambda
+2026-06-10 07:45:08,281 [INFO] infra.streaming: === Criando Lambda Firehose Transform ===
+2026-06-10 07:45:08,784 [INFO] infra.streaming: Lambda 'dijkfood-firehose-transform' criada
+2026-06-10 07:45:08,786 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:45:08,787 [INFO] deploy: 
+🔧 FASE 5: CloudWatch Monitoring
+2026-06-10 07:45:08,788 [INFO] infra.monitoring: === Criando CloudWatch Log Groups ===
+2026-06-10 07:45:10,145 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/order-processor
+2026-06-10 07:45:10,476 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/order-management
+2026-06-10 07:45:10,800 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/position-tracker
+2026-06-10 07:45:11,110 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/conversational
+2026-06-10 07:45:11,413 [INFO] infra.monitoring: Log Group criado: /ecs/dijkfood/ml-inference
+2026-06-10 07:45:11,413 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push
+2026-06-10 07:45:11,424 [INFO] infra.compute: === Criando repositórios ECR ===
+2026-06-10 07:45:12,664 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor
+2026-06-10 07:45:12,864 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-management
+2026-06-10 07:45:13,062 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/position-tracker
+2026-06-10 07:45:13,263 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/conversational
+2026-06-10 07:45:13,464 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/ml-inference
+2026-06-10 07:45:13,672 [INFO] infra.compute: ECR repo criado: 884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/dashboard-analytics
+2026-06-10 07:45:13,676 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:45:13,676 [INFO] infra.compute: === Build & Push de imagens Docker ===
+2026-06-10 07:45:20,995 [INFO] infra.compute: Login no ECR realizado
+2026-06-10 07:45:20,995 [INFO] infra.compute: Building order-processor...
+2026-06-10 07:45:21,696 [ERROR] deploy: ERRO FATAL durante criação: Command '['docker', 'build', '-t', '884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest', 'C:\\Users\\guibu\\OneDrive - Fundacao Getulio Vargas - FGV\\7o PERÍODO\\Computação em Nuvem\\DijkFoodRemake\\services\\order-processor']' returned non-zero exit status 1.
+Traceback (most recent call last):
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\deploy.py", line 222, in create_all
+    build_and_push_images(ecr, repos, account_id)
+  File "C:\Users\guibu\OneDrive - Fundacao Getulio Vargas - FGV\7o PERÍODO\Computação em Nuvem\DijkFoodRemake\infra\compute.py", line 141, in build_and_push_images
+    subprocess.run(
+  File "C:\Python312\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'build', '-t', '884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor:latest', 'C:\\Users\\guibu\\OneDrive - Fundacao Getulio Vargas - FGV\\7o PERÍODO\\Computação em Nuvem\\DijkFoodRemake\\services\\order-processor']' returned non-zero exit status 1.
+2026-06-10 07:45:21,758 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:50:47,991 [INFO] deploy: Resuming deployment from Phase 6...
+2026-06-10 07:50:48,154 [INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials
+2026-06-10 07:50:52,024 [INFO] deploy: 
+🔧 FASE 6: ECR, Docker Build & Push (SKIPPED)
+2026-06-10 07:50:52,026 [INFO] deploy: 
+🔧 FASE 7: ECS Cluster, Task Definitions, ALB, Services
+2026-06-10 07:50:52,026 [INFO] infra.compute: === Criando ECS Cluster ===
+2026-06-10 07:50:53,418 [INFO] infra.compute: ECS Cluster criado: arn:aws:ecs:us-east-1:884474267760:cluster/dijkfood-cluster
+2026-06-10 07:50:53,420 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:50:53,421 [INFO] infra.compute: === Criando Application Load Balancer ===
+2026-06-10 07:50:55,348 [INFO] infra.compute: ALB criado: dijkfood-alb-2086599426.us-east-1.elb.amazonaws.com
+2026-06-10 07:53:43,488 [INFO] infra.compute: Target Group criado: tg-order-processor
+2026-06-10 07:53:43,807 [INFO] infra.compute: Target Group criado: tg-order-management
+2026-06-10 07:53:44,122 [INFO] infra.compute: Target Group criado: tg-position-tracker
+2026-06-10 07:53:44,435 [INFO] infra.compute: Target Group criado: tg-conversational
+2026-06-10 07:53:44,732 [INFO] infra.compute: Target Group criado: tg-ml-inference
+2026-06-10 07:53:45,058 [INFO] infra.compute: Target Group criado: tg-dashboard-analytics
+2026-06-10 07:53:45,239 [INFO] infra.compute: Listener HTTP:80 criado
+2026-06-10 07:53:45,434 [INFO] infra.compute: Listener Rule criada: ['/api/orders*'] → order-processor
+2026-06-10 07:53:45,610 [INFO] infra.compute: Listener Rule criada: ['/api/customers*', '/api/restaurants*', '/api/couriers*'] → order-management
+2026-06-10 07:53:45,802 [INFO] infra.compute: Listener Rule criada: ['/api/positions*'] → position-tracker
+2026-06-10 07:53:45,986 [INFO] infra.compute: Listener Rule criada: ['/api/chat*'] → conversational
+2026-06-10 07:53:46,160 [INFO] infra.compute: Listener Rule criada: ['/api/predictions*'] → ml-inference
+2026-06-10 07:53:46,382 [INFO] infra.compute: Listener Rule criada: ['/api/dashboard*'] → dashboard-analytics
+2026-06-10 07:53:46,383 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:53:46,384 [INFO] infra.compute: === Criando Task Definitions ===
+2026-06-10 07:53:47,685 [INFO] infra.compute: Task Definition criada: order-processor — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-processor:2
+2026-06-10 07:53:47,869 [INFO] infra.compute: Task Definition criada: order-management — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-management:2
+2026-06-10 07:53:48,051 [INFO] infra.compute: Task Definition criada: position-tracker — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-position-tracker:2
+2026-06-10 07:53:48,234 [INFO] infra.compute: Task Definition criada: conversational — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-conversational:2
+2026-06-10 07:53:48,434 [INFO] infra.compute: Task Definition criada: ml-inference — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-ml-inference:2
+2026-06-10 07:53:48,629 [INFO] infra.compute: Task Definition criada: dashboard-analytics — arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-dashboard-analytics:1
+2026-06-10 07:53:48,629 [INFO] infra.compute: === Criando ECS Services ===
+2026-06-10 07:53:49,619 [INFO] infra.compute: ECS Service criado: order-processor
+2026-06-10 07:53:50,399 [INFO] infra.compute: ECS Service criado: order-management
+2026-06-10 07:53:51,185 [INFO] infra.compute: ECS Service criado: position-tracker
+2026-06-10 07:53:51,853 [INFO] infra.compute: ECS Service criado: conversational
+2026-06-10 07:53:52,635 [INFO] infra.compute: ECS Service criado: ml-inference
+2026-06-10 07:53:53,502 [INFO] infra.compute: ECS Service criado: dashboard-analytics
+2026-06-10 07:53:53,505 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:53:53,507 [INFO] deploy: 
+🔧 FASE 8: Auto Scaling
+2026-06-10 07:53:53,508 [INFO] infra.compute: === Configurando Auto Scaling ===
+2026-06-10 07:53:55,548 [INFO] infra.compute: Auto Scaling configurado: order-processor (target CPU 70%)
+2026-06-10 07:53:56,574 [INFO] infra.compute: Auto Scaling configurado: order-management (target CPU 70%)
+2026-06-10 07:53:57,270 [INFO] infra.compute: Auto Scaling configurado: position-tracker (target CPU 60%)
+2026-06-10 07:53:58,013 [INFO] infra.compute: Auto Scaling configurado: conversational (target CPU 70%)
+2026-06-10 07:53:58,935 [INFO] infra.compute: Auto Scaling configurado: ml-inference (target CPU 70%)
+2026-06-10 07:53:59,688 [INFO] infra.compute: Auto Scaling configurado: dashboard-analytics (target CPU 70%)
+2026-06-10 07:53:59,688 [INFO] deploy: 
+🔧 FASE 9: Alarmes e Dashboard CloudWatch
+2026-06-10 07:53:59,689 [INFO] infra.monitoring: === Criando CloudWatch Alarms ===
+2026-06-10 07:54:01,042 [INFO] infra.monitoring: Alarm criado: dijkfood-alb-5xx-high
+2026-06-10 07:54:01,236 [INFO] infra.monitoring: Alarm criado: dijkfood-alb-latency-p95
+2026-06-10 07:54:01,236 [INFO] infra.monitoring: === Criando CloudWatch Dashboard ===
+2026-06-10 07:54:01,520 [INFO] infra.monitoring: Dashboard 'DijkFood-Operational' criado
+2026-06-10 07:54:01,520 [INFO] deploy: 
+🔧 FASE 10: CloudFront (Camada de Apresentação)
+2026-06-10 07:54:01,522 [INFO] infra.analytics: === Criando distribuição CloudFront ===
+2026-06-10 07:54:02,738 [ERROR] infra.analytics: Erro ao criar CloudFront: An error occurred (AccessDenied) when calling the CreateDistribution operation: User: arn:aws:sts::884474267760:assumed-role/voclabs/user4889220=guilherme.buss.silva@gmail.com is not authorized to perform: cloudfront:CreateDistribution on resource: arn:aws:cloudfront::884474267760:distribution/* because no identity-based policy allows the cloudfront:CreateDistribution action
+2026-06-10 07:54:02,747 [INFO] deploy: Estado salvo em deploy_state.json
+2026-06-10 07:54:02,748 [INFO] deploy: === Upload do Frontend para S3 ===
+2026-06-10 07:54:04,883 [INFO] deploy: Frontend configurado para usar a API: http://dijkfood-alb-2086599426.us-east-1.elb.amazonaws.com
+2026-06-10 07:54:04,884 [INFO] deploy: Upload de arquivos do frontend concluído com sucesso
+2026-06-10 07:54:04,884 [INFO] deploy: 
+⏳ FASE 11: Aguardando estabilização dos serviços...
+2026-06-10 07:54:04,884 [INFO] infra.compute: === Aguardando estabilização dos serviços ECS ===
+2026-06-10 08:04:49,994 [WARNING] infra.compute: Timeout ao aguardar estabilização: Waiter ServicesStable failed: Max attempts exceeded
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-order-processor: ACTIVE — running: 0/2
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-order-management: ACTIVE — running: 0/2
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-position-tracker: ACTIVE — running: 0/2
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-conversational: ACTIVE — running: 0/1
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-ml-inference: ACTIVE — running: 0/1
+2026-06-10 08:04:50,292 [INFO] infra.compute:   dijkfood-dashboard-analytics: ACTIVE — running: 0/1
+2026-06-10 08:04:50,310 [INFO] deploy: 
+================================================================================
+2026-06-10 08:04:50,310 [INFO] deploy: ✅ DEPLOY CONCLUÍDO COM SUCESSO!
+2026-06-10 08:04:50,310 [INFO] deploy: ================================================================================
+2026-06-10 08:04:50,313 [INFO] deploy: 📍 ALB (Backend): http://dijkfood-alb-2086599426.us-east-1.elb.amazonaws.com
+2026-06-10 08:04:50,313 [INFO] deploy: 📍 Frontend (S3 Website): http://dijkfood-frontend-884474267760.s3-website-us-east-1.amazonaws.com
+2026-06-10 08:04:50,313 [INFO] deploy:    (CloudFront não disponível — LabRole sem permissão)
+2026-06-10 08:04:50,315 [INFO] deploy: 
+Você já pode rodar o simulador:
+2026-06-10 08:04:50,317 [INFO] deploy: python simulator.py --url http://dijkfood-alb-2086599426.us-east-1.elb.amazonaws.com --scenario normal --duration 120

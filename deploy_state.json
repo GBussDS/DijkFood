@@ -1,0 +1,85 @@
+{
+  "vpc": {
+    "vpc_id": "vpc-0c4c69abaa62b7754",
+    "public_subnets": [
+      "subnet-01f122a195e9dc727",
+      "subnet-07eb3e94145b27c93"
+    ],
+    "private_subnets": [
+      "subnet-0a03ac33ef843337b",
+      "subnet-03fc04d377cc2ab85"
+    ],
+    "igw_id": "igw-0223ef56c93b6ad50",
+    "nat_gw_id": "nat-04e811de864425d5f",
+    "eip_alloc_id": "eipalloc-082f910480982bde0",
+    "sg_alb_id": "sg-04c7355fef643573d",
+    "sg_ecs_id": "sg-0bce8e04391adbfb6",
+    "sg_rds_id": "sg-0693415e62e8f2ef6",
+    "public_rt_id": "rtb-01dfcbf92399d477d",
+    "private_rt_id": "rtb-02d41b1158ba1d50e"
+  },
+  "db": {
+    "db_host": "dijkfood-db.c8qic2tonppa.us-east-1.rds.amazonaws.com",
+    "db_port": 5432,
+    "db_name": "dijkfood",
+    "db_user": "dijkfood",
+    "db_pass": "DijkFood2026!Secure"
+  },
+  "dynamodb_tables": [
+    "courier_positions",
+    "order_status_cache",
+    "anomalies",
+    "historical_averages"
+  ],
+  "s3_buckets": {
+    "data_lake": "dijkfood-data-lake-884474267760",
+    "models": "dijkfood-models-884474267760",
+    "athena_results": "dijkfood-athena-results-884474267760",
+    "frontend": "dijkfood-frontend-884474267760"
+  },
+  "glue": {
+    "database": "dijkfood_analytics",
+    "table": "events",
+    "crawler": "dijkfood-crawler"
+  },
+  "stream_arn": "arn:aws:kinesis:us-east-1:884474267760:stream/dijkfood-events",
+  "ecr_repos": {
+    "order-processor": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-processor",
+    "order-management": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/order-management",
+    "position-tracker": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/position-tracker",
+    "conversational": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/conversational",
+    "ml-inference": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/ml-inference",
+    "dashboard-analytics": "884474267760.dkr.ecr.us-east-1.amazonaws.com/dijkfood/dashboard-analytics"
+  },
+  "cluster_arn": "arn:aws:ecs:us-east-1:884474267760:cluster/dijkfood-cluster",
+  "alb": {
+    "alb_arn": "arn:aws:elasticloadbalancing:us-east-1:884474267760:loadbalancer/app/dijkfood-alb/53accf50ceb8ae46",
+    "alb_dns": "dijkfood-alb-2086599426.us-east-1.elb.amazonaws.com",
+    "listener_arn": "arn:aws:elasticloadbalancing:us-east-1:884474267760:listener/app/dijkfood-alb/53accf50ceb8ae46/cbbfdce850fa76b7",
+    "target_groups": {
+      "order-processor": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-order-processor/a97ac1f276330936",
+      "order-management": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-order-management/067a5e7448aecbfb",
+      "position-tracker": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-position-tracker/ca1faf145ad0d7ea",
+      "conversational": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-conversational/589e8f8ae98bc14c",
+      "ml-inference": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-ml-inference/84ddbb92af88b00c",
+      "dashboard-analytics": "arn:aws:elasticloadbalancing:us-east-1:884474267760:targetgroup/tg-dashboard-analytics/0e3bfaf22bc8f690"
+    }
+  },
+  "task_defs": {
+    "order-processor": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-processor:2",
+    "order-management": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-order-management:2",
+    "position-tracker": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-position-tracker:2",
+    "conversational": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-conversational:2",
+    "ml-inference": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-ml-inference:2",
+    "dashboard-analytics": "arn:aws:ecs:us-east-1:884474267760:task-definition/dijkfood-dashboard-analytics:1"
+  },
+  "services": {
+    "order-processor": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-order-processor",
+    "order-management": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-order-management",
+    "position-tracker": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-position-tracker",
+    "conversational": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-conversational",
+    "ml-inference": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-ml-inference",
+    "dashboard-analytics": "arn:aws:ecs:us-east-1:884474267760:service/dijkfood-cluster/dijkfood-dashboard-analytics"
+  },
+  "cloudfront": null
+}

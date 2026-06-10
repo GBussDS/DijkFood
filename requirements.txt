@@ -1,0 +1,14 @@
+# Deploy & Cloud Automation
+boto3==1.35.0
+
+# Load Simulator
+aiohttp==3.9.5
+
+# ML Training Pipeline
+pandas==2.2.2
+scikit-learn==1.5.0
+joblib==1.4.0
+numpy==2.0.0
+
+# PostgreSQL interaction (for init script fallback)
+asyncpg==0.29.0

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DijkFood — Dashboard operacional e analítico para plataforma de delivery">
+    <title>DijkFood — Dashboard Operacional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- ============================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ============================================================ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🍕</span>
+                <span class="logo-text">DijkFood</span>
+            </div>
+            <span class="version-badge">A2</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="orders" id="nav-orders">
+                <span class="nav-icon">📦</span>
+                <span>Pedidos</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="couriers" id="nav-couriers">
+                <span class="nav-icon">🛵</span>
+                <span>Entregadores</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="analytics" id="nav-analytics">
+                <span class="nav-icon">📈</span>
+                <span>Analítico</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="chat" id="nav-chat">
+                <span class="nav-icon">💬</span>
+                <span>Assistente IA</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <span class="status-dot" id="system-status-dot"></span>
+                <span id="system-status-text">Conectando...</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================================ -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h1 id="page-title">Dashboard Operacional</h1>
+                <span class="breadcrumb">Visão em tempo real</span>
+            </div>
+            <div class="top-bar-right">
+                <span class="clock" id="clock"></span>
+                <button class="btn-refresh" id="btn-refresh" title="Atualizar dados">🔄</button>
+            </div>
+        </header>
+
+        <!-- ====================================================== -->
+        <!-- TAB: DASHBOARD -->
+        <!-- ====================================================== -->
+        <section class="tab-content active" id="tab-dashboard">
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card" id="kpi-orders-today">
+                    <div class="kpi-icon">📦</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value" id="kpi-orders-value">—</span>
+                        <span class="kpi-label">Pedidos Hoje</span>
+                    </div>
+                </div>
+                <div class="kpi-card" id="kpi-active-orders">
+                    <div class="kpi-icon">⚡</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value" id="kpi-active-value">—</span>
+                        <span class="kpi-label">Pedidos Ativos</span>
+                    </div>
+                </div>
+                <div class="kpi-card" id="kpi-avg-time">
+                    <div class="kpi-icon">⏱️</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value" id="kpi-time-value">—</span>
+                        <span class="kpi-label">Tempo Médio (min)</span>
+                    </div>
+                </div>
+                <div class="kpi-card" id="kpi-couriers">
+                    <div class="kpi-icon">🛵</div>
+                    <div class="kpi-body">
+                        <span class="kpi-value" id="kpi-couriers-value">—</span>
+                        <span class="kpi-label">Entregadores Disponíveis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Volume de Pedidos (por Hora)</h3>
+                    <canvas id="chart-orders-volume"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Tempo Médio por Status</h3>
+                    <canvas id="chart-status-times"></canvas>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Top Restaurantes</h3>
+                    <canvas id="chart-top-restaurants"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribuição de Tempo de Entrega</h3>
+                    <canvas id="chart-delivery-histogram"></canvas>
+                </div>
+            </div>
+
+            <!-- Anomalias -->
+            <div class="anomalies-panel">
+                <h3>🚨 Anomalias Ativas</h3>
+                <div id="anomalies-list" class="anomalies-list">
+                    <div class="anomaly-empty">Nenhuma anomalia detectada</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB: ORDERS -->
+        <!-- ====================================================== -->
+        <section class="tab-content" id="tab-orders">
+            <div class="orders-controls">
+                <input type="text" id="order-search" placeholder="Buscar por Order ID..." class="search-input">
+                <select id="order-filter" class="filter-select">
+                    <option value="">Todos os status</option>
+                    <option value="CONFIRMED">Confirmado</option>
+                    <option value="PREPARING">Preparando</option>
+                    <option value="READY_FOR_PICKUP">Pronto p/ Coleta</option>
+                    <option value="PICKED_UP">Coletado</option>
+                    <option value="IN_TRANSIT">Em Trânsito</option>
+                    <option value="DELIVERED">Entregue</option>
+                </select>
+            </div>
+            <div class="orders-table-wrapper">
+                <table class="data-table" id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Status</th>
+                            <th>Cliente</th>
+                            <th>Restaurante</th>
+                            <th>Entregador</th>
+                            <th>Tempo Estimado</th>
+                            <th>Criado em</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB: COURIERS -->
+        <!-- ====================================================== -->
+        <section class="tab-content" id="tab-couriers">
+            <div class="couriers-grid" id="couriers-grid">
+                <p class="empty-state">Carregando entregadores...</p>
+            </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB: ANALYTICS -->
+        <!-- ====================================================== -->
+        <section class="tab-content" id="tab-analytics">
+            <div class="charts-row">
+                <div class="chart-card full-width">
+                    <h3>Heatmap de Demanda (Dia × Hora)</h3>
+                    <canvas id="chart-demand-heatmap"></canvas>
+                </div>
+            </div>
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Pedidos por Região</h3>
+                    <canvas id="chart-region-dist"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Predição de Demanda (Próximas Horas)</h3>
+                    <canvas id="chart-demand-prediction"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================================== -->
+        <!-- TAB: CHAT (Assistente IA) -->
+        <!-- ====================================================== -->
+        <section class="tab-content" id="tab-chat">
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-message bot">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            <p>Olá! Sou o assistente operacional da DijkFood. Posso ajudar com informações sobre pedidos, entregadores, métricas e predições. Como posso ajudar?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chat-input" placeholder="Pergunte algo sobre a operação..."
+                           class="chat-input" autocomplete="off">
+                    <button id="chat-send" class="chat-send-btn">Enviar</button>
+                </div>
+                <div class="chat-suggestions">
+                    <button class="suggestion-chip" data-msg="Qual o tempo médio de entrega hoje?">⏱️ Tempo médio</button>
+                    <button class="suggestion-chip" data-msg="Quantos pedidos foram feitos hoje?">📦 Pedidos hoje</button>
+                    <button class="suggestion-chip" data-msg="Tem alguma anomalia operacional agora?">🚨 Anomalias</button>
+                    <button class="suggestion-chip" data-msg="Quais os restaurantes mais pedidos?">🏆 Top restaurantes</button>
+                    <button class="suggestion-chip" data-msg="Previsão de demanda para as próximas horas?">📈 Previsão demanda</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
