@@ -14,7 +14,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from models import CreateOrderRequest, CreateOrderResponse
-from graph_loader import calculate_route, is_graph_loaded
+from graph_loader import calculate_route
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -191,7 +191,11 @@ async def list_orders(
             params.append(f"{search}%")
             idx += 1
 
-        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        # Sem filtros explícitos: limita a última hora para evitar full scan
+        if not conditions:
+            conditions.append(f"o.created_at > NOW() - INTERVAL '1 hour'")
+
+        where = f"WHERE {' AND '.join(conditions)}"
         params.append(limit)
 
         rows = await conn.fetch(f"""
@@ -221,7 +225,7 @@ async def list_orders(
         ]
 
 
-@router.post("/api/orders", response_model=CreateOrderResponse)
+@router.post("/api/orders", response_model=CreateOrderResponse, status_code=201)
 async def create_order(request: CreateOrderRequest):
     """
     Cria um novo pedido.
@@ -235,9 +239,6 @@ async def create_order(request: CreateOrderRequest):
     """
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
-
-    if not is_graph_loaded():
-        raise HTTPException(status_code=503, detail="Grafo de rotas ainda carregando, tente em instantes")
 
     # 1+2. Validar cliente e restaurante — leituras simples, sem transação
     async with db_pool.acquire() as conn:

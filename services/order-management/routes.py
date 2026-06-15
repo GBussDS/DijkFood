@@ -212,7 +212,11 @@ async def list_orders(
             params.append(f"{search}%")
             idx += 1
 
-        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        # Sem filtros explícitos: limita a última hora para evitar full scan
+        if not conditions:
+            conditions.append(f"o.created_at > NOW() - INTERVAL '1 hour'")
+
+        where = f"WHERE {' AND '.join(conditions)}"
         params.append(limit)
 
         rows = await conn.fetch(f"""

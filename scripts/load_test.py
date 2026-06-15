@@ -368,8 +368,12 @@ async def run_load_scenario(
                         adv.add_done_callback(all_tasks.discard)
                     else:
                         errors += 1
-                except Exception:
+                        if errors <= 5:
+                            print(f"\n  [ERRO] HTTP {resp.status_code}: {resp.text[:200]}")
+                except Exception as e:
                     errors += 1
+                    if errors <= 5:
+                        print(f"\n  [ERRO] Exceção: {e}")
 
         async def query_orders() -> None:
             t0 = time.monotonic()
