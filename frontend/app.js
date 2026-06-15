@@ -6,7 +6,9 @@
 // ============================================================
 // CONFIG
 // ============================================================
-const API_BASE = window.location.origin; // Ajustar para URL do ALB em produção
+// API_BASE é injetado pelo config.js (gerado pelo `make frontend` com a URL do ALB).
+// Em dev local, config.js usa window.location.origin como fallback.
+const API_BASE = window.API_BASE || window.location.origin;
 
 // Dashboard Analytics API base (mesma origin em prod, porta diferente em dev)
 const DASHBOARD_API = API_BASE;

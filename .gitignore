@@ -1,0 +1,92 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+*.so
+
+# Virtualenvs
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+uv.lock
+.python-version
+
+# pyproject
+pyproject.toml
+
+# ============================================================
+# Testes / resultados
+# ============================================================
+load_test_*.json
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ============================================================
+# AWS / credenciais
+# ============================================================
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+credentials
+aws_credentials
+
+# ============================================================
+# Terraform
+# ============================================================
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/*.tfplan
+terraform/override.tf
+terraform/override.tf.json
+
+# ============================================================
+# Frontend / Node
+# ============================================================
+node_modules/
+frontend/config.js
+
+# ============================================================
+# Docker
+# ============================================================
+*.dockerignore
+
+# ============================================================
+# IDEs e SO
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# Logs e temporários
+# ============================================================
+*.log
+*.tmp
+*.bak

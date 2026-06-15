@@ -6,6 +6,9 @@ import json
 import logging
 import os
 import time
+from decimal import Decimal
+from datetime import datetime, date
+from uuid import UUID
 
 import asyncpg
 import boto3
@@ -24,12 +27,15 @@ ATHENA_OUTPUT = os.environ.get("ATHENA_OUTPUT", "s3://dijkfood-athena-results/")
 ML_INFERENCE_URL = os.environ.get("ML_INFERENCE_URL", "http://ml-inference:8000")
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "courier_positions")
 
-# Pool de conexões PostgreSQL
+# Pool de conexões PostgreSQL e referência ao event loop principal
 db_pool = None
+_main_loop = None
 
 
 async def init_db_pool():
-    global db_pool
+    global db_pool, _main_loop
+    import asyncio
+    _main_loop = asyncio.get_running_loop()
     db_pool = await asyncpg.create_pool(
         host=DB_HOST, port=int(DB_PORT),
         database=DB_NAME, user=DB_USER, password=DB_PASS,
@@ -97,6 +103,22 @@ def query_athena(sql: str) -> str:
         return f"Erro ao executar query no Athena: {str(e)}"
 
 
+def _to_json_safe(v):
+    """Converte valores asyncpg para tipos serializáveis em JSON sem perder semântica.
+
+    str(None) → "None" (string) faz o modelo reportar "NULL" nos dados; aqui
+    mantemos None → null no JSON, e convertemos apenas tipos que json.dumps
+    não suporta nativamente (UUID, datetime, Decimal).
+    """
+    if v is None:
+        return None
+    if isinstance(v, (UUID, datetime, date)):
+        return str(v)
+    if isinstance(v, Decimal):
+        return float(v)
+    return v
+
+
 async def query_orders_db(query_description: str) -> str:
     """
     Consulta dados operacionais em tempo real do banco PostgreSQL.
@@ -139,7 +161,7 @@ async def query_orders_db(query_description: str) -> str:
                         order_id
                     )
                     if result:
-                        return json.dumps({k: str(v) for k, v in dict(result).items()})
+                        return json.dumps({k: _to_json_safe(v) for k, v in dict(result).items()})
                     return "Pedido não encontrado."
                 else:
                     # Contagem por status
@@ -160,7 +182,7 @@ async def query_orders_db(query_description: str) -> str:
                     rows = await conn.fetch(
                         "SELECT id, name, cuisine_type, latitude, longitude FROM restaurants LIMIT 20"
                     )
-                    return json.dumps([{k: str(v) for k, v in dict(r).items()} for r in rows])
+                    return json.dumps([{k: _to_json_safe(v) for k, v in dict(r).items()} for r in rows])
 
             elif "entregador" in query_lower or "courier" in query_lower:
                 if "disponível" in query_lower or "available" in query_lower:
@@ -172,7 +194,7 @@ async def query_orders_db(query_description: str) -> str:
                     rows = await conn.fetch(
                         "SELECT id, name, vehicle_type, status FROM couriers LIMIT 20"
                     )
-                    return json.dumps([{k: str(v) for k, v in dict(r).items()} for r in rows])
+                    return json.dumps([{k: _to_json_safe(v) for k, v in dict(r).items()} for r in rows])
 
             elif "tempo médio" in query_lower or "average" in query_lower:
                 result = await conn.fetchrow("""
@@ -191,7 +213,7 @@ async def query_orders_db(query_description: str) -> str:
                         (SELECT COUNT(*) FROM couriers WHERE status = 'AVAILABLE') as available_couriers,
                         (SELECT AVG(estimated_time) FROM orders WHERE status = 'DELIVERED' AND created_at >= CURRENT_DATE) as avg_delivery_time
                 """)
-                return json.dumps({k: str(v) for k, v in dict(result).items()})
+                return json.dumps({k: _to_json_safe(v) for k, v in dict(result).items()})
 
     except Exception as e:
         logger.error(f"Erro ao consultar PostgreSQL: {e}")

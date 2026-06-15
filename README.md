@@ -1,34 +1,33 @@
 # DijkFood A2 — Plataforma de Delivery AI-Driven na Nuvem
 
-Este projeto implementa uma arquitetura baseada em microsserviços orientada a eventos para uma plataforma de delivery fictícia, a **DijkFood**, com suporte nativo a Inteligência Artificial via Amazon Bedrock e análise de dados em tempo real.
+Plataforma de delivery fictícia construída sobre uma arquitetura de microsserviços orientada a eventos na AWS. Toda a infraestrutura é gerenciada por **Terraform** e os comandos do dia a dia são expostos via **Makefile**.
 
-O projeto provisiona toda a infraestrutura na AWS automaticamente utilizando Python (`boto3`), abrangendo VPCs, ECS Fargate, RDS PostgreSQL, DynamoDB, Kinesis, Firehose, S3 Data Lake, Glue, Athena, e CloudFront.
-
----
-
-## 📋 Pré-requisitos
-
-Antes de iniciar o deploy, você precisará ter instalado em sua máquina:
-
-1. **[AWS CLI v2](https://aws.amazon.com/cli/)** — Interface de linha de comando da AWS.
-2. **[Python 3.12+](https://www.python.org/downloads/)** — Para executar os scripts de automação.
-3. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** — Necessário rodando em background para que o script possa fazer o build das imagens e enviá-las para o ECR.
+Serviços AWS provisionados automaticamente: VPC, ECS Fargate, RDS PostgreSQL, DynamoDB, Kinesis Data Streams, Kinesis Firehose, S3 Data Lake, Glue, Athena, ECR e Application Load Balancer.
 
 ---
 
-## 🔐 Configuração das Credenciais AWS (Dual Profile)
+## Pré-requisitos
 
-A arquitetura deste projeto exige o uso de **dois perfis da AWS**, pois ele foi projetado para rodar os serviços principais em uma conta educacional (AWS Academy / Learner Lab) que possui a permissão `LabRole`, mas o serviço de IA Generativa (Amazon Bedrock) não está disponível no AWS Academy e precisa de uma conta pessoal secundária.
+| Ferramenta | Versão mínima | Para quê |
+|---|---|---|
+| [AWS CLI v2](https://aws.amazon.com/cli/) | 2.x | Autenticar e operar recursos AWS |
+| [Terraform](https://www.terraform.io/downloads) | 1.5+ | Provisionar infraestrutura |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | qualquer | Build e push das imagens para o ECR |
+| [jq](https://stedolan.github.io/jq/) | qualquer | Parsing de JSON nos scripts |
+| Python 3.12+ | — | Simulador e treinamento de modelos ML |
 
-### Passo 1: Configurar a conta principal (AWS Academy / Lab)
+---
 
-Esta conta hospedará 99% da infraestrutura (VPC, ECS, RDS, Kinesis, S3, etc).
+## Configuração das Credenciais AWS (Dual Profile)
 
-1. Entre no seu AWS Academy / Learner Lab e clique em **AWS Details**.
-2. Clique em **Show** ao lado de *AWS CLI*.
-3. Copie as credenciais fornecidas (vão se parecer com as abaixo).
-4. Abra o arquivo `~/.aws/credentials` (no Windows: `C:\Users\SEU_USUARIO\.aws\credentials`) usando o bloco de notas.
-5. Cole as credenciais sob o perfil `[default]`:
+O projeto exige **dois perfis AWS** porque o Amazon Bedrock não está disponível em contas do AWS Academy e precisa de uma conta pessoal separada.
+
+### Conta principal — AWS Academy / Lab
+
+Hospeda 99% da infraestrutura (VPC, ECS, RDS, Kinesis, S3, etc.).
+
+1. Entre no seu Learner Lab, clique em **AWS Details → Show** ao lado de *AWS CLI*.
+2. Abra `~/.aws/credentials` e cole sob o perfil `[default]`:
 
 ```ini
 [default]
@@ -37,26 +36,20 @@ aws_secret_access_key=...
 aws_session_token=...
 ```
 
-*Nota: As credenciais do AWS Academy expiram a cada algumas horas. Lembre-se de atualizá-las antes de rodar o deploy se a sua sessão expirar.*
+> As credenciais do Academy expiram a cada algumas horas. Atualize-as antes de qualquer operação.
 
-### Passo 2: Configurar a conta secundária (Amazon Bedrock)
+### Conta secundária — Amazon Bedrock
 
-Esta é sua conta AWS pessoal onde você habilitou o acesso aos modelos Claude no Amazon Bedrock.
-
-1. No Console da sua conta pessoal, vá até **IAM** e crie um usuário com permissão de uso do Bedrock (ex: `AmazonBedrockFullAccess`).
-2. Gere **Access Keys** (Access Key ID e Secret Access Key) para este usuário.
-3. No mesmo arquivo `~/.aws/credentials`, adicione um **novo** perfil chamado `[bedrock]`:
+1. Na sua conta pessoal, crie um usuário IAM com a policy `AmazonBedrockFullAccess` e gere Access Keys.
+2. Adicione ao mesmo arquivo `~/.aws/credentials`:
 
 ```ini
 [bedrock]
 aws_access_key_id=AKIA...
 aws_secret_access_key=...
 ```
-*(Contas normais de IAM não precisam de `aws_session_token`)*
 
-### Passo 3: Configurar a Região Padrão
-
-Edite ou crie o arquivo `~/.aws/config` (no Windows: `C:\Users\SEU_USUARIO\.aws\config`):
+### Arquivo `~/.aws/config`
 
 ```ini
 [default]
@@ -70,89 +63,188 @@ output=json
 
 ---
 
-## 🚀 Como fazer o Deploy
+## Deploy — Passo a Passo
 
-Com os perfis da AWS devidamente configurados e o Docker Desktop rodando, abra o seu terminal (Prompt de Comando ou PowerShell) na pasta do projeto e siga os passos abaixo:
-
-### 1. Instalar as dependências do script
-
-O script `deploy.py` depende principalmente do `boto3` para orquestrar a nuvem:
+### 1. Configure as variáveis
 
 ```bash
-pip install boto3
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
 ```
 
-### 2. Rodar o Deploy de Criação
+Edite `terraform.tfvars` com sua senha do banco e as credenciais do Bedrock:
 
-Execute o script de automação no modo `create`. Este processo leva de **15 a 25 minutos** pois irá criar as VPCs, provisionar um banco de dados Multi-AZ RDS, subir a stack analítica e fazer o push de 5 containers Docker para o AWS ECR.
+```hcl
+db_password               = "SUA_SENHA_AQUI"
+bedrock_access_key_id     = "AKIA..."
+bedrock_secret_access_key = "..."
+```
+
+### 2. Suba toda a infraestrutura
 
 ```bash
-python deploy.py create
+make up
 ```
 
-**O que observar durante o deploy:**
-- O script logará cada passo. Se encontrar um erro momentâneo (ex: eventual consistência da AWS), o script irá aguardar as disponibilidades automaticamente usando `waiters`.
-- Ao final, ele imprimirá no console a URL do **Application Load Balancer (ALB)** e a URL do **CloudFront**.
+Isso cria VPC, subnets, SGs, RDS, DynamoDB, S3, Kinesis, Glue, ECR, ECS Cluster e ALB.  
+Leva **15–25 minutos**, principalmente pelo RDS.
 
-### 3. Acessar a Aplicação
+### 3. Faça o build e push das imagens Docker
 
-O CloudFront serve o conteúdo estático da pasta `frontend` em uma CDN global. **O script de deploy configura automaticamente a URL do backend e faz o upload dos arquivos HTML/JS/CSS para você.**
+```bash
+make push
+```
 
-Basta acessar o link do **CloudFront URL** impresso no final do script (`https://d123456...cloudfront.net`) e o painel já estará operando com dados reais.
+Compila os 6 containers e envia para o ECR. Requer o Docker Desktop rodando.
 
-*(Você também pode rodar o frontend no seu computador simplesmente dando dois cliques no arquivo `index.html` na pasta `frontend`, lembrando que ele fará requests diretos ao ALB hospedado na AWS caso você não modifique manualmente a variável `API_BASE`).*
+### 4. Execute o schema no banco
+
+```bash
+make schema
+```
+
+Cria as tabelas PostgreSQL (`customers`, `restaurants`, `couriers`, `orders`, `order_events`) com as extensões PostGIS e uuid-ossp.
+
+### 5. Acesse a aplicação
+
+```bash
+make outputs
+```
+
+A saída mostrará:
+- `alb_dns_name` — URL do backend (todos os microsserviços)
+- `frontend_url` — URL do painel estático hospedado no S3
 
 ---
 
-## 📊 Rodando o Simulador de Carga
+## Destruir a Infraestrutura
 
-Para ver o dashboard ganhando vida e o Kinesis processando dados analíticos em tempo real, use o script de simulação. Instale os requisitos dele primeiro:
+Para evitar cobranças no crédito do Learner Lab:
+
+```bash
+make down
+```
+
+Remove todos os recursos provisionados pelo Terraform (ECS, RDS, Load Balancer, S3, Kinesis, etc.).
+
+---
+
+## Gerenciamento Individual de Serviços
+
+### Parar e retomar containers (instantâneo, sem Terraform)
+
+Esses comandos alteram apenas o `desired_count` do ECS — são os mais rápidos para economizar recursos durante desenvolvimento:
+
+```bash
+# Para um container específico (desired_count = 0)
+make service-stop SERVICE=ml-inference
+
+# Retoma (desired_count = min_tasks configurado)
+make service-start SERVICE=order-processor
+
+# Para e reinicia (útil para forçar novo deploy após push)
+make service-restart SERVICE=conversational
+```
+
+### Criar e destruir um serviço individualmente (via Terraform)
+
+Útil quando você quer remover completamente um serviço (Target Group, Listener Rule, Auto Scaling) sem derrubar o resto:
+
+```bash
+# Provisiona apenas o serviço especificado
+make service-create SERVICE=dashboard-analytics
+
+# Remove apenas o serviço especificado
+make service-destroy SERVICE=dashboard-analytics
+```
+
+Você também pode controlar quais serviços existem editando `terraform.tfvars`:
+
+```hcl
+# Para remover o serviço conversational do provisionamento:
+enabled_services = [
+  "order-processor",
+  "order-management",
+  "position-tracker",
+  "ml-inference",
+  "dashboard-analytics",
+  # "conversational",  ← comentado = será destruído no próximo apply
+]
+```
+
+Depois:
+
+```bash
+make plan    # confirme o que será removido
+make up      # aplica a mudança
+```
+
+### Ver status e logs
+
+```bash
+# Status de todos os serviços (running / desired / status)
+make status
+
+# Tail dos logs em tempo real de um serviço
+make logs SERVICE=order-processor
+```
+
+---
+
+## Referência de Comandos
+
+| Comando | O que faz |
+|---|---|
+| `make up` | Cria toda a infraestrutura |
+| `make down` | Destrói toda a infraestrutura |
+| `make plan` | Mostra as mudanças antes de aplicar |
+| `make push` | Build + push de todas as imagens |
+| `make push SERVICE=x` | Build + push de uma única imagem |
+| `make service-stop SERVICE=x` | Para um container (desired=0) |
+| `make service-start SERVICE=x` | Retoma um container |
+| `make service-restart SERVICE=x` | Para e reinicia um container |
+| `make service-create SERVICE=x` | Provisiona um serviço via Terraform |
+| `make service-destroy SERVICE=x` | Destrói um serviço via Terraform |
+| `make status` | Status de todos os containers ECS |
+| `make logs SERVICE=x` | Tail dos logs CloudWatch |
+| `make schema` | Executa o schema SQL no RDS |
+| `make outputs` | Mostra todas as URLs e IDs |
+
+---
+
+## Simulador de Carga
+
+Para popular o banco e o Kinesis com dados reais:
 
 ```bash
 pip install aiohttp pandas scikit-learn
+python simulator.py --url http://SEU_ALB_DNS --scenario normal --duration 300
 ```
 
-Rode uma carga normal para encher o banco de dados e os streams:
-
-```bash
-python simulator.py --url http://SUA_URL_DO_ALB_AQUI --scenario normal --duration 300
-```
-Isso irá criar restaurantes e entregadores fakes e lançará dezenas de pedidos por segundo no ALB por 5 minutos, engatilhando os serviços de Tracking e o Fargate Auto Scaling.
+Cria restaurantes e entregadores fictícios e dispara dezenas de pedidos por segundo durante 5 minutos.
 
 ---
 
-## 🧠 Treinando Modelos de ML
+## Treinamento de Modelos ML
 
-Após rodar algumas simulações de carga para popular o seu *Data Lake* (os dados vão do Kinesis para o Firehose, para o Glue e caem no S3), você pode treinar e subir novos modelos de IA para previsões de tempo de entrega:
+Após rodar o simulador (para ter dados no Data Lake), treine modelos reais:
 
 ```bash
-# Treinar com dados reais do Amazon Athena e salvar no bucket do projeto
-python train_model.py --bucket NOME_DO_SEU_BUCKET_DE_MODELOS
-```
+# Com dados reais do Athena
+python train_model.py --bucket $(cd terraform && terraform output -raw s3_models_bucket)
 
-*(Caso não queira esperar o Glue processar dados, você pode rodar `python train_model.py --synthetic` para gerar dados falsos de ML)*.
+# Com dados sintéticos (sem precisar esperar o Glue processar)
+python train_model.py --synthetic
+```
 
 ---
 
-## 🗑️ Como Destruir e Evitar Cobranças
+## Desenvolvimento Local (sem AWS)
 
-Como a infraestrutura provisiona RDS Multi-AZ, Load Balancers, CloudFront, e NAT Gateways, é **fundamental** destruir o laboratório ao terminar seus testes para não consumir todo o crédito do Learner Lab.
-
-Basta rodar o comando inverso:
-
-```bash
-python deploy.py destroy
-```
-
-O script irá remover os Scale Targets, apagar as instâncias do ECS e os repositórios ECR de forma segura, apagar os Buckets S3 (esvaziando-os primeiro) e de-registrar a VPC, finalizando o encerramento do seu ambiente completo.
-
----
-
-### Desenvolvimento Local (Alternativa)
-
-Não quer ou não pode usar a AWS agora? Você pode rodar tudo no seu próprio computador usando o LocalStack (AWS local falsa).
+Para rodar tudo localmente com LocalStack:
 
 ```bash
 docker-compose up --build
 ```
-*Acesse o dashboard estático abrindo o `frontend/index.html` no seu navegador com a `API_BASE = "http://localhost:8000"` (ou as portas correspondentes de cada serviço).*
+
+Abra `frontend/index.html` no navegador. A variável `API_BASE` no `frontend/app.js` deve apontar para `http://localhost:8000`.

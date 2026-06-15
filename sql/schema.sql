@@ -4,6 +4,13 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Recria do zero (idempotente)
+DROP TABLE IF EXISTS order_events CASCADE;
+DROP TABLE IF EXISTS orders      CASCADE;
+DROP TABLE IF EXISTS couriers    CASCADE;
+DROP TABLE IF EXISTS restaurants CASCADE;
+DROP TABLE IF EXISTS customers   CASCADE;
+
 -- ============================================================
 -- CUSTOMERS
 -- ============================================================

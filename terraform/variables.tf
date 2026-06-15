@@ -78,6 +78,19 @@ variable "kinesis_shard_count" {
 
 # ── ECS ──────────────────────────────────────────────────────────────────────
 
+variable "enabled_services" {
+  description = "Microsserviços a provisionar. Remova um nome para destruir apenas aquele serviço sem tocar na infra base."
+  type        = list(string)
+  default = [
+    "order-processor",
+    "order-management",
+    "position-tracker",
+    "conversational",
+    "ml-inference",
+    "dashboard-analytics",
+  ]
+}
+
 variable "services" {
   description = "Definições de cada microsserviço ECS"
   type = list(object({
@@ -172,6 +185,13 @@ variable "bedrock_access_key_id" {
 
 variable "bedrock_secret_access_key" {
   description = "Secret Access Key da conta pessoal para o Bedrock"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "bedrock_session_token" {
+  description = "Session Token temporário para o Bedrock (obrigatório com credenciais AWS Academy)"
   type        = string
   default     = ""
   sensitive   = true

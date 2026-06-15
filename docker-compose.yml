@@ -111,6 +111,7 @@ services:
       ML_INFERENCE_URL: http://ml-inference:8004
       BEDROCK_AWS_ACCESS_KEY_ID: ${BEDROCK_AWS_ACCESS_KEY_ID:-}
       BEDROCK_AWS_SECRET_ACCESS_KEY: ${BEDROCK_AWS_SECRET_ACCESS_KEY:-}
+      BEDROCK_AWS_SESSION_TOKEN: ${BEDROCK_AWS_SESSION_TOKEN:-}
     depends_on:
       postgres:
         condition: service_healthy

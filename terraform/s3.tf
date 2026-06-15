@@ -22,7 +22,7 @@ locals {
 resource "aws_s3_bucket" "data_lake" {
   bucket        = local.buckets.data_lake
   force_destroy = true
-  tags          = { Name = local.buckets.data_lake, Purpose = "Data Lake — eventos Kinesis Firehose" }
+  tags          = { Name = local.buckets.data_lake, Purpose = "Data Lake - eventos Kinesis Firehose" }
 }
 
 resource "aws_s3_bucket_versioning" "data_lake" {
@@ -50,7 +50,7 @@ resource "aws_s3_bucket_public_access_block" "data_lake" {
 resource "aws_s3_bucket" "models" {
   bucket        = local.buckets.models
   force_destroy = true
-  tags          = { Name = local.buckets.models, Purpose = "Modelos ML (.pkl)" }
+  tags          = { Name = local.buckets.models, Purpose = "Modelos ML pkl" }
 }
 
 resource "aws_s3_bucket_versioning" "models" {
@@ -106,7 +106,7 @@ resource "aws_s3_bucket_public_access_block" "athena_results" {
 resource "aws_s3_bucket" "frontend" {
   bucket        = local.buckets.frontend
   force_destroy = true
-  tags          = { Name = local.buckets.frontend, Purpose = "Frontend estático (static website)" }
+  tags          = { Name = local.buckets.frontend, Purpose = "Frontend estatico static website" }
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {

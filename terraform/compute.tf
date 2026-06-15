@@ -2,7 +2,21 @@
 # Camada de Computação: ECR + ECS Fargate + ALB + Auto Scaling
 # ============================================================
 
-# ── ECR: um repositório por microsserviço ─────────────────────────────────────
+locals {
+  # Apenas os serviços listados em var.enabled_services são provisionados.
+  # Remova um nome da lista (ou via -var) para destruir somente aquele serviço.
+  active_services = {
+    for svc in var.services : svc.name => svc
+    if contains(var.enabled_services, svc.name)
+  }
+
+  db_services        = ["order-processor", "order-management", "conversational", "dashboard-analytics"]
+  ml_caller_services = ["order-processor", "conversational"]
+  bedrock_service    = "conversational"
+  dashboard_service  = "dashboard-analytics"
+}
+
+# ── ECR: um repositório por microsserviço (sempre criado, independente de enabled) ──
 
 resource "aws_ecr_repository" "services" {
   for_each = { for svc in var.services : svc.name => svc }
@@ -18,7 +32,7 @@ resource "aws_ecr_repository" "services" {
   tags = { Name = "${var.project}-${each.key}" }
 }
 
-# ── ECS Cluster com Container Insights habilitado ─────────────────────────────
+# ── ECS Cluster ───────────────────────────────────────────────────────────────
 
 resource "aws_ecs_cluster" "main" {
   name = "${var.project}-cluster"
@@ -42,10 +56,10 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   }
 }
 
-# ── CloudWatch Log Groups (um por serviço) ────────────────────────────────────
+# ── CloudWatch Log Groups — somente para serviços ativos ──────────────────────
 
 resource "aws_cloudwatch_log_group" "ecs" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   name              = "/ecs/${var.project}/${each.key}"
   retention_in_days = 7
@@ -53,18 +67,10 @@ resource "aws_cloudwatch_log_group" "ecs" {
   tags = { Service = each.key }
 }
 
-# ── Task Definitions ──────────────────────────────────────────────────────────
-# As variáveis de ambiente espelham exatamente o que infra/compute.py injeta.
-
-locals {
-  db_services        = ["order-processor", "order-management", "conversational", "dashboard-analytics"]
-  ml_caller_services = ["order-processor", "conversational"]
-  bedrock_service    = "conversational"
-  dashboard_service  = "dashboard-analytics"
-}
+# ── Task Definitions — somente para serviços ativos ───────────────────────────
 
 resource "aws_ecs_task_definition" "services" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   family                   = "${var.project}-${each.key}"
   network_mode             = "awsvpc"
@@ -86,13 +92,11 @@ resource "aws_ecs_task_definition" "services" {
     }]
 
     environment = concat(
-      # Variáveis comuns a todos os serviços
       [
         { name = "AWS_REGION", value = var.aws_region },
         { name = "KINESIS_STREAM", value = aws_kinesis_stream.events.name },
         { name = "DYNAMODB_TABLE", value = aws_dynamodb_table.courier_positions.name },
       ],
-      # Variáveis de banco — apenas serviços que conectam ao RDS
       contains(local.db_services, each.key) ? [
         { name = "DB_HOST", value = aws_db_instance.postgres.address },
         { name = "DB_PORT", value = tostring(aws_db_instance.postgres.port) },
@@ -100,25 +104,22 @@ resource "aws_ecs_task_definition" "services" {
         { name = "DB_USER", value = var.db_username },
         { name = "DB_PASS", value = var.db_password },
       ] : [],
-      # URL do ML Inference — order-processor e conversational consultam
       contains(local.ml_caller_services, each.key) ? [
         { name = "ML_INFERENCE_URL", value = "http://localhost:8004" },
       ] : [],
-      # Credenciais Bedrock + Athena — somente o serviço conversational
       each.key == local.bedrock_service ? [
         { name = "BEDROCK_MODEL_ID", value = var.bedrock_model_id },
         { name = "BEDROCK_AWS_ACCESS_KEY_ID", value = var.bedrock_access_key_id },
         { name = "BEDROCK_AWS_SECRET_ACCESS_KEY", value = var.bedrock_secret_access_key },
+        { name = "BEDROCK_AWS_SESSION_TOKEN", value = var.bedrock_session_token },
         { name = "ATHENA_DATABASE", value = aws_glue_catalog_database.analytics.name },
         { name = "ATHENA_OUTPUT", value = "s3://${aws_s3_bucket.athena_results.bucket}/" },
       ] : [],
-      # Athena + tabela de anomalias — somente o dashboard-analytics
       each.key == local.dashboard_service ? [
         { name = "ATHENA_DATABASE", value = aws_glue_catalog_database.analytics.name },
         { name = "ATHENA_OUTPUT", value = "s3://${aws_s3_bucket.athena_results.bucket}/" },
         { name = "DYNAMODB_TABLE", value = aws_dynamodb_table.anomalies.name },
       ] : [],
-      # Bucket de modelos — somente o ml-inference
       each.key == "ml-inference" ? [
         { name = "MODELS_BUCKET", value = aws_s3_bucket.models.bucket },
       ] : [],
@@ -127,7 +128,7 @@ resource "aws_ecs_task_definition" "services" {
     logConfiguration = {
       logDriver = "awslogs"
       options = {
-        "awslogs-group"         = aws_cloudwatch_log_group.ecs[each.key].name
+        "awslogs-group"         = "/ecs/${var.project}/${each.key}"
         "awslogs-region"        = var.aws_region
         "awslogs-stream-prefix" = "ecs"
       }
@@ -137,7 +138,7 @@ resource "aws_ecs_task_definition" "services" {
   tags = { Service = each.key }
 }
 
-# ── Application Load Balancer ─────────────────────────────────────────────────
+# ── Application Load Balancer (sempre criado) ──────────────────────────────────
 
 resource "aws_lb" "main" {
   name               = "${var.project}-alb"
@@ -149,9 +150,25 @@ resource "aws_lb" "main" {
   tags = { Name = "${var.project}-alb" }
 }
 
-# Target Group individual para cada serviço (tipo IP — obrigatório no Fargate awsvpc)
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "application/json"
+      message_body = jsonencode({ error = "Route not found" })
+      status_code  = "404"
+    }
+  }
+}
+
+# ── Target Groups — somente para serviços ativos ─────────────────────────────
+
 resource "aws_lb_target_group" "services" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   name        = "tg-${substr(each.key, 0, 28)}"
   port        = each.value.port
@@ -172,25 +189,10 @@ resource "aws_lb_target_group" "services" {
   tags = { Name = "${var.project}-tg-${each.key}" }
 }
 
-# Listener HTTP:80 — default retorna 404
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = 80
-  protocol          = "HTTP"
+# ── Listener Rules — somente para serviços ativos ────────────────────────────
 
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "application/json"
-      message_body = jsonencode({ error = "Route not found" })
-      status_code  = "404"
-    }
-  }
-}
-
-# Listener Rules de roteamento por path (uma regra por serviço)
 resource "aws_lb_listener_rule" "services" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   listener_arn = aws_lb_listener.http.arn
   priority     = each.value.priority
@@ -207,10 +209,10 @@ resource "aws_lb_listener_rule" "services" {
   }
 }
 
-# ── ECS Services ──────────────────────────────────────────────────────────────
+# ── ECS Services — somente para serviços ativos ───────────────────────────────
 
 resource "aws_ecs_service" "services" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   name                              = "${var.project}-${each.key}"
   cluster                           = aws_ecs_cluster.main.id
@@ -240,7 +242,7 @@ resource "aws_ecs_service" "services" {
     type = "ECS"
   }
 
-  # Ignora mudanças de desired_count — o Auto Scaling controla isso em runtime
+  # Auto Scaling controla desired_count em runtime
   lifecycle {
     ignore_changes = [desired_count]
   }
@@ -248,10 +250,10 @@ resource "aws_ecs_service" "services" {
   depends_on = [aws_lb_listener.http]
 }
 
-# ── Application Auto Scaling por CPU ─────────────────────────────────────────
+# ── Auto Scaling — somente para serviços ativos ───────────────────────────────
 
 resource "aws_appautoscaling_target" "ecs" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.services[each.key].name}"
@@ -263,7 +265,7 @@ resource "aws_appautoscaling_target" "ecs" {
 }
 
 resource "aws_appautoscaling_policy" "cpu" {
-  for_each = { for svc in var.services : svc.name => svc }
+  for_each = local.active_services
 
   name               = "${var.project}-${each.key}-cpu-scaling"
   service_namespace  = "ecs"

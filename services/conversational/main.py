@@ -5,6 +5,7 @@ Microsserviço de IA conversacional com LangChain + Amazon Bedrock.
 import json
 import logging
 import os
+import re
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import List, Optional
@@ -28,6 +29,29 @@ AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 executor = None
 
 
+def _normalize_output(output) -> str:
+    """
+    Converte a saída do agente em string.
+
+    Com a Converse API (ChatBedrockConverse), o `output` pode vir como uma lista
+    de blocos de conteúdo — ex.: [{'type': 'text', 'text': '...'}] — em vez de
+    string pura. Também removemos blocos de raciocínio <thinking>...</thinking>
+    que alguns modelos emitem.
+    """
+    if isinstance(output, list):
+        text = "".join(
+            block.get("text", "") if isinstance(block, dict) else str(block)
+            for block in output
+        )
+    elif isinstance(output, str):
+        text = output
+    else:
+        text = str(output)
+
+    text = re.sub(r"<thinking>.*?</thinking>", "", text, flags=re.DOTALL)
+    return text.strip() or "Não consegui processar sua pergunta."
+
+
 class ChatRequest(BaseModel):
     message: str
     history: Optional[List[dict]] = None
@@ -49,7 +73,11 @@ async def lifespan(app: FastAPI):
     logger.info("=== Agente Conversacional — Startup ===")
 
     # Inicializar pool de DB para as tools
-    await init_db_pool()
+    try:
+        await init_db_pool()
+        logger.info("Pool de DB inicializado com sucesso")
+    except Exception as e:
+        logger.error(f"Falha ao inicializar pool de DB: {e} — serviço iniciará sem acesso ao banco")
 
     # Criar agente LangChain
     try:
@@ -106,11 +134,21 @@ async def chat(request: ChatRequest):
             "chat_history": chat_history
         })
 
-        bot_response = result.get("output", "Não consegui processar sua pergunta.")
+        bot_response = result.get("output", "")
+        bot_response = _normalize_output(bot_response)
+
+        # early_stopping_method="generate" já produz uma resposta, mas por segurança:
+        if not bot_response or "agent stopped" in bot_response.lower():
+            bot_response = "Não consegui obter os dados necessários para responder. Tente reformular a pergunta ou pergunte sobre pedidos, entregadores ou métricas específicas."
 
     except Exception as e:
         logger.error(f"Erro no agente: {e}")
-        bot_response = f"Desculpe, ocorreu um erro ao processar sua pergunta: {str(e)}"
+        err = str(e).lower()
+        if "max iterations" in err or "iteration limit" in err:
+            bot_response = "Não consegui completar a consulta dentro do tempo limite. Tente uma pergunta mais específica, como 'quantos pedidos hoje?' ou 'entregadores disponíveis'."
+        else:
+            bot_response = f"Desculpe, ocorreu um erro ao processar sua pergunta. Tente novamente."
+            logger.error(f"Detalhe do erro: {e}")
 
     # Emitir evento de conversa para Kinesis
     try:

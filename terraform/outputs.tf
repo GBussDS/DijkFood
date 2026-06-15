@@ -103,6 +103,17 @@ output "ecr_repository_urls" {
   value       = { for k, v in aws_ecr_repository.services : k => v.repository_url }
 }
 
+output "services_config" {
+  description = "Configuração de cada serviço (usada pelo Makefile para recuperar min_tasks)"
+  value       = { for svc in var.services : svc.name => { min_tasks = svc.min_tasks, max_tasks = svc.max_tasks, port = svc.port } }
+}
+
+output "db_password" {
+  description = "Senha do RDS (usada pelo make schema)"
+  value       = var.db_password
+  sensitive   = true
+}
+
 # ── Analítico ────────────────────────────────────────────────────────────────
 
 output "glue_database_name" {
