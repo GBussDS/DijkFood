@@ -56,8 +56,9 @@ DB_NAME = os.environ.get("DB_NAME", "dijkfood")
 DB_USER = os.environ.get("DB_USER", "dijkfood")
 DB_PASS = os.environ.get("DB_PASS", "dijkfood")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
-ATHENA_DATABASE = os.environ.get("ATHENA_DATABASE", "dijkfood_analytics")
-ATHENA_OUTPUT = os.environ.get("ATHENA_OUTPUT", "s3://dijkfood-athena-results/")
+# Injetados pelo Terraform via task definition (ver compute.tf → dashboard_service)
+ATHENA_DATABASE = os.environ.get("ATHENA_DATABASE", "")
+ATHENA_OUTPUT = os.environ.get("ATHENA_OUTPUT", "")
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "anomalies")
 
 # Sinaliza se Athena está disponível (tenta na primeira chamada)
@@ -119,9 +120,12 @@ app.add_middleware(
 # HELPERS
 # ============================================================
 def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
-    """Tenta executar no Athena; retorna None se indisponível."""
+    """Tenta executar no Athena; retorna None se indisponível ou não configurado."""
     global athena_available
     if athena_available is False:
+        return None
+    if not ATHENA_DATABASE or not ATHENA_OUTPUT:
+        athena_available = False
         return None
     result = run_athena_query(sql, AWS_REGION, ATHENA_DATABASE, ATHENA_OUTPUT)
     if result is not None:

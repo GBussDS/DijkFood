@@ -170,8 +170,8 @@ responda com o que você sabe sem tentar novamente.
         agent=agent,
         tools=tools,
         verbose=True,
-        max_iterations=8,
-        early_stopping_method="generate",  # gera resposta final em vez de retornar o erro
+        max_iterations=3,
+        early_stopping_method="generate",
         handle_parsing_errors=True,
     )
 

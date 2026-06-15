@@ -67,7 +67,7 @@ def query_athena(sql: str) -> str:
         query_execution_id = response["QueryExecutionId"]
 
         # Aguardar resultado (polling com timeout)
-        for _ in range(30):  # max 30 tentativas (30s)
+        for _ in range(10):  # max 10 tentativas (10s)
             result = client.get_query_execution(QueryExecutionId=query_execution_id)
             state = result["QueryExecution"]["Status"]["State"]
 

@@ -76,6 +76,16 @@ CUISINE_TYPES = ["Japonesa", "Brasileira", "Italiana", "Americana", "Mexicana"]
 VEHICLE_TYPES = ["Moto", "Bike", "Carro"]
 STATUS_CHAIN = ["PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"]
 
+# Transições restantes a partir de cada status (para liberar entregadores no reset)
+REMAINING_TRANSITIONS: Dict[str, List[str]] = {
+    "CONFIRMED":        ["PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"],
+    "PREPARING":        ["READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"],
+    "READY_FOR_PICKUP": ["PICKED_UP", "IN_TRANSIT", "DELIVERED"],
+    "PICKED_UP":        ["IN_TRANSIT", "DELIVERED"],
+    "IN_TRANSIT":       ["DELIVERED"],
+    "DELIVERED":        [],
+}
+
 SLA_MS = 500.0
 
 
@@ -93,6 +103,86 @@ def percentile(data: List[float], p: float) -> float:
     idx = (p / 100) * (len(s) - 1)
     lo, hi = int(idx), min(int(idx) + 1, len(s) - 1)
     return s[lo] + (s[hi] - s[lo]) * (idx - lo)
+
+
+# ============================================================
+# RESET — libera entregadores ocupados de execuções anteriores
+# ============================================================
+async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
+    """Libera entregadores ocupados de execuções anteriores.
+
+    Usa o endpoint /api/admin/reset-environment (dois UPDATEs em lote, <1s).
+    """
+    print("→ Resetando ambiente (pedidos ativos → DELIVERED, entregadores → AVAILABLE)...")
+
+    try:
+        r = await client.post(f"{base}/api/orders/reset", timeout=30)
+        if r.status_code == 200:
+            data = r.json()
+            orders = data.get("orders_delivered", 0)
+            couriers = data.get("couriers_released", 0)
+            if orders == 0:
+                print("  ✓ Nenhum pedido ativo encontrado.\n")
+            else:
+                print(f"  ✓ {orders} pedidos → DELIVERED | {couriers} entregadores → AVAILABLE\n")
+            return
+        else:
+            print(f"  ⚠ Endpoint retornou {r.status_code}, tentando fallback...")
+    except Exception as e:
+        print(f"  ⚠ Endpoint indisponível ({e}), tentando fallback...")
+
+    # Fallback: avança passo a passo via PATCH (lento, mas funciona em qualquer versão)
+    active_statuses = ["CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT"]
+    sem = asyncio.Semaphore(100)
+
+    async def deliver_order(order: dict) -> None:
+        order_id = order.get("id") or order.get("order_id")
+        if not order_id:
+            return
+        current = order.get("status", "CONFIRMED")
+        for status in REMAINING_TRANSITIONS.get(current, []):
+            async with sem:
+                try:
+                    await client.patch(
+                        f"{base}/api/orders/{order_id}/status",
+                        json={"status": status},
+                        timeout=10.0,
+                    )
+                except Exception:
+                    return
+
+    total_delivered = 0
+    while True:
+        try:
+            responses = await asyncio.gather(
+                *[
+                    client.get(
+                        f"{base}/api/orders",
+                        params={"status": s, "limit": 200},
+                        timeout=30,
+                    )
+                    for s in active_statuses
+                ],
+                return_exceptions=True,
+            )
+            found: List[dict] = []
+            for r in responses:
+                if not isinstance(r, Exception) and r.status_code == 200:
+                    found.extend(r.json())
+        except Exception as e:
+            print(f"  ⚠ Não foi possível buscar pedidos: {e}")
+            break
+
+        if not found:
+            break
+
+        await asyncio.gather(*[deliver_order(o) for o in found], return_exceptions=True)
+        total_delivered += len(found)
+
+    if total_delivered == 0:
+        print("  ✓ Nenhum pedido ativo encontrado.\n")
+    else:
+        print(f"  ✓ {total_delivered} pedidos finalizados via fallback.\n")
 
 
 # ============================================================
@@ -114,14 +204,14 @@ async def seed_entities(
     customers: List[str] = []
     couriers: List[str] = []
 
-    # Reaproveitar entidades existentes
+    # Reaproveitar entidades existentes (apenas entregadores AVAILABLE)
     try:
         r = await client.get(f"{base}/api/restaurants", timeout=15)
         if r.status_code == 200:
             restaurants = [x["id"] for x in r.json()]
         r = await client.get(f"{base}/api/couriers", timeout=15)
         if r.status_code == 200:
-            couriers = [x["id"] for x in r.json()]
+            couriers = [x["id"] for x in r.json() if x.get("status") == "AVAILABLE"]
     except Exception:
         pass
 
@@ -239,8 +329,9 @@ async def run_load_scenario(
     ) as client:
 
         async def advance_order(order_id: str) -> None:
-            async with advance_sem:
-                for status in STATUS_CHAIN:
+            for status in STATUS_CHAIN:
+                # Libera o semáforo entre cada passo para maximizar concorrência
+                async with advance_sem:
                     try:
                         await client.patch(
                             f"{base}/api/orders/{order_id}/status",
@@ -248,7 +339,7 @@ async def run_load_scenario(
                             timeout=10.0,
                         )
                     except Exception:
-                        break
+                        return
 
         async def create_order() -> None:
             nonlocal orders_created, errors
@@ -438,8 +529,9 @@ async def run_single(base: str, target_ops: int, dashboard_url: Optional[str]) -
     print(f"Proporção entregadores/clientes: 3:1 ({config['couriers']}/{config['customers']})")
     print(f"SLA: P95 < {SLA_MS:.0f}ms para registro e consulta\n")
 
-    seed_limits = httpx.Limits(max_connections=60, max_keepalive_connections=40)
+    seed_limits = httpx.Limits(max_connections=100, max_keepalive_connections=80)
     async with httpx.AsyncClient(limits=seed_limits, timeout=httpx.Timeout(30.0)) as client:
+        await reset_environment(client, base)
         restaurants, customers, couriers = await seed_entities(client, base, config)
 
     if not restaurants or not customers or not couriers:
@@ -471,8 +563,9 @@ async def run_all(base: str, dashboard_url: Optional[str]) -> None:
         print(f"# CENÁRIO {i+1}/3: {config['description']}")
         print(f"{'#'*60}")
 
-        seed_limits = httpx.Limits(max_connections=80, max_keepalive_connections=60)
+        seed_limits = httpx.Limits(max_connections=100, max_keepalive_connections=80)
         async with httpx.AsyncClient(limits=seed_limits, timeout=httpx.Timeout(30.0)) as client:
+            await reset_environment(client, base)
             restaurants, customers, couriers = await seed_entities(client, base, config)
 
         if not restaurants or not customers or not couriers:
@@ -527,13 +620,24 @@ def main() -> None:
         "--dashboard", default=None,
         help="URL do dashboard-analytics para enviar resultados (opcional)",
     )
+    parser.add_argument(
+        "--reset", action="store_true",
+        help="Apenas avança todos os pedidos ativos até DELIVERED e encerra (sem rodar carga)",
+    )
     args = parser.parse_args()
 
     base = args.alb.rstrip("/")
     dashboard_url = args.dashboard.rstrip("/") if args.dashboard else None
 
     try:
-        if args.scenario == "all":
+        if args.reset:
+            async def _do_reset():
+                limits = httpx.Limits(max_connections=100, max_keepalive_connections=80)
+                async with httpx.AsyncClient(limits=limits, timeout=httpx.Timeout(30.0)) as client:
+                    await reset_environment(client, base)
+                print("Reset concluído.")
+            asyncio.run(_do_reset())
+        elif args.scenario == "all":
             asyncio.run(run_all(base, dashboard_url))
         else:
             asyncio.run(run_single(base, int(args.scenario), dashboard_url))

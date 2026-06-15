@@ -2,6 +2,7 @@
 DijkFood — Order Management: Route Handlers
 CRUD de clientes, restaurantes, entregadores + gerenciamento de status de pedidos.
 """
+import asyncio
 import json
 import logging
 import os
@@ -49,7 +50,7 @@ async def init_db():
     db_pool = await asyncpg.create_pool(
         host=DB_HOST, port=int(DB_PORT),
         database=DB_NAME, user=DB_USER, password=DB_PASS,
-        min_size=5, max_size=20
+        min_size=2, max_size=10,
     )
     logger.info("Pool de conexões PostgreSQL inicializado")
 
@@ -314,6 +315,34 @@ async def update_order_status(order_id: UUID, req: UpdateStatusRequest):
         logger.error(f"Falha ao emitir evento Kinesis: {e}")
 
     return {"order_id": str(order_id), "old_status": current_status, "new_status": req.status}
+
+
+@router.post("/api/orders/reset")
+async def reset_environment():
+    """Avança todos os pedidos ativos para DELIVERED e libera entregadores."""
+    async with db_pool.acquire() as conn:
+        async with conn.transaction():
+            result = await conn.fetchrow("""
+                WITH delivered AS (
+                    UPDATE orders
+                    SET status = 'DELIVERED', updated_at = NOW()
+                    WHERE status NOT IN ('DELIVERED', 'CANCELLED')
+                    RETURNING courier_id
+                ),
+                released AS (
+                    UPDATE couriers
+                    SET status = 'AVAILABLE'
+                    WHERE id IN (SELECT courier_id FROM delivered WHERE courier_id IS NOT NULL)
+                    RETURNING id
+                )
+                SELECT
+                    (SELECT COUNT(*) FROM delivered) AS orders_delivered,
+                    (SELECT COUNT(*) FROM released)  AS couriers_released
+            """)
+    return {
+        "orders_delivered": result["orders_delivered"],
+        "couriers_released": result["couriers_released"],
+    }
 
 
 @router.get("/api/orders/{order_id}/events")

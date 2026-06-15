@@ -41,6 +41,27 @@ Chart.defaults.color = '#8e8ea0';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
 Chart.defaults.font.family = "'Inter', sans-serif";
 
+// Plugin global: exibe "Sem dados disponíveis" em charts vazios
+const emptyStatePlugin = {
+    id: 'emptyState',
+    afterDraw(chart) {
+        const hasData = chart.data.datasets.some(
+            d => d.data && d.data.some(v => (typeof v === 'object' ? v !== null : v > 0))
+        );
+        if (!hasData) {
+            const { ctx, width, height } = chart;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#5a5a6e';
+            ctx.font = '13px Inter, sans-serif';
+            ctx.fillText('Sem dados disponíveis', width / 2, height / 2);
+            ctx.restore();
+        }
+    },
+};
+Chart.register(emptyStatePlugin);
+
 let chatHistory = [];
 
 // ============================================================
@@ -51,15 +72,12 @@ document.querySelectorAll('.nav-item').forEach(item => {
         e.preventDefault();
         const tab = item.dataset.tab;
 
-        // Update nav
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         item.classList.add('active');
 
-        // Update content
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.getElementById(`tab-${tab}`).classList.add('active');
 
-        // Update title
         const titles = {
             dashboard: 'Dashboard Operacional',
             orders: 'Gestão de Pedidos',
@@ -134,52 +152,61 @@ async function checkSystemStatus() {
         text.textContent = 'Sistema Online';
     } else {
         dot.classList.remove('online');
-        text.textContent = 'Modo Demonstração';
+        text.textContent = 'Sistema Offline';
     }
 }
 
 // ============================================================
-// KPI DATA (real data with demo fallback)
+// KPI DATA — apenas dados reais
 // ============================================================
 async function loadKPIs() {
-    // Try dashboard-analytics service first
     const data = await dashboardGet('/api/dashboard/summary');
 
-    if (data && (data.orders_today > 0 || data.active_orders > 0 || data.available_couriers > 0)) {
-        animateKPI('kpi-orders-value', data.orders_today);
-        animateKPI('kpi-active-value', data.active_orders);
-        document.getElementById('kpi-time-value').textContent =
-            data.avg_delivery_time > 0 ? data.avg_delivery_time.toFixed(1) : '—';
-        animateKPI('kpi-couriers-value', data.available_couriers);
-        return;
+    if (data) {
+        const ordersEl = document.getElementById('kpi-orders-value');
+        const activeEl = document.getElementById('kpi-active-value');
+        const timeEl = document.getElementById('kpi-time-value');
+        const couriersEl = document.getElementById('kpi-couriers-value');
+
+        if (data.orders_today > 0) {
+            animateKPI('kpi-orders-value', data.orders_today);
+        } else {
+            ordersEl.textContent = '0';
+        }
+
+        if (data.active_orders > 0) {
+            animateKPI('kpi-active-value', data.active_orders);
+        } else {
+            activeEl.textContent = '0';
+        }
+
+        timeEl.textContent = data.avg_delivery_time > 0
+            ? data.avg_delivery_time.toFixed(1)
+            : '—';
+
+        if (data.available_couriers > 0) {
+            animateKPI('kpi-couriers-value', data.available_couriers);
+        } else {
+            couriersEl.textContent = '0';
+        }
+    } else {
+        ['kpi-orders-value', 'kpi-active-value', 'kpi-couriers-value'].forEach(id => {
+            document.getElementById(id).textContent = '—';
+        });
+        document.getElementById('kpi-time-value').textContent = '—';
     }
-
-    // Demo data fallback
-    const demoData = {
-        ordersToday: Math.floor(Math.random() * 500 + 200),
-        activeOrders: Math.floor(Math.random() * 50 + 10),
-        avgTime: (Math.random() * 20 + 15).toFixed(1),
-        availableCouriers: Math.floor(Math.random() * 80 + 30),
-    };
-
-    animateKPI('kpi-orders-value', demoData.ordersToday);
-    animateKPI('kpi-active-value', demoData.activeOrders);
-    document.getElementById('kpi-time-value').textContent = demoData.avgTime;
-    animateKPI('kpi-couriers-value', demoData.availableCouriers);
 }
 
 function animateKPI(elementId, targetValue) {
     const el = document.getElementById(elementId);
     const duration = 1000;
-    const start = 0;
     const startTime = performance.now();
 
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-        const current = Math.floor(start + (targetValue - start) * eased);
-        el.textContent = current.toLocaleString('pt-BR');
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(targetValue * eased).toLocaleString('pt-BR');
         if (progress < 1) requestAnimationFrame(update);
     }
 
@@ -187,66 +214,11 @@ function animateKPI(elementId, targetValue) {
 }
 
 // ============================================================
-// DEMO DATA GENERATORS (fallback)
-// ============================================================
-function demoOrdersPerHour() {
-    return Array.from({length: 24}, (_, i) => {
-        if (i >= 11 && i <= 14) return Math.floor(Math.random() * 30 + 40);
-        if (i >= 18 && i <= 21) return Math.floor(Math.random() * 40 + 50);
-        if (i >= 7 && i <= 9) return Math.floor(Math.random() * 15 + 10);
-        return Math.floor(Math.random() * 8 + 2);
-    });
-}
-
-function demoStatusTimes() {
-    return {
-        labels: ['PREPARING', 'READY_FOR_PICKUP', 'PICKED_UP', 'IN_TRANSIT'],
-        data: [8.5, 3.2, 2.1, 18.7],
-    };
-}
-
-function demoTopRestaurants() {
-    const names = Array.from({length: 10}, (_, i) => `Restaurant_${i}`);
-    const values = names.map(() => Math.floor(Math.random() * 80 + 20)).sort((a, b) => b - a);
-    return { labels: names, data: values };
-}
-
-function demoDeliveryHistogram() {
-    return {
-        labels: ['5-10', '10-15', '15-20', '20-25', '25-30', '30-35', '35-40', '40-45', '45-50', '50+'],
-        data: [5, 15, 35, 55, 42, 28, 18, 10, 5, 3],
-    };
-}
-
-function demoDemandHeatmap() {
-    const data = [];
-    for (let d = 0; d < 7; d++) {
-        for (let h = 0; h < 24; h++) {
-            let intensity = 5;
-            if (h >= 11 && h <= 14) intensity = 30 + Math.random() * 20;
-            else if (h >= 18 && h <= 21) intensity = 40 + Math.random() * 25;
-            else if (h >= 7 && h <= 9) intensity = 15 + Math.random() * 10;
-            if (d >= 5) intensity *= 1.3;
-            data.push({ x: h, y: d, r: Math.sqrt(intensity) * 2 });
-        }
-    }
-    return data;
-}
-
-function demoRegionDistribution() {
-    return {
-        labels: ['Centro', 'Zona Sul', 'Zona Norte', 'Zona Leste', 'Zona Oeste'],
-        data: [85, 65, 45, 55, 35],
-    };
-}
-
-// ============================================================
-// CHARTS
+// CHARTS — apenas dados reais; vazios mostram "Sem dados"
 // ============================================================
 let charts = {};
 
 async function initCharts() {
-    // Fetch all data in parallel (with null fallback)
     const [ordersData, statusData, restaurantsData, histogramData, heatmapData, regionData] =
         await Promise.all([
             dashboardGet('/api/dashboard/orders-per-hour'),
@@ -261,7 +233,7 @@ async function initCharts() {
     const hours = Array.from({length: 24}, (_, i) => `${i}h`);
     const orderVolume = (ordersData && ordersData.data && ordersData.data.some(v => v > 0))
         ? ordersData.data
-        : demoOrdersPerHour();
+        : Array(24).fill(0);
 
     charts.ordersVolume = new Chart(document.getElementById('chart-orders-volume'), {
         type: 'bar',
@@ -274,7 +246,7 @@ async function initCharts() {
                 borderColor: CHART_COLORS.primary,
                 borderWidth: 1.5,
                 borderRadius: 4,
-            }]
+            }],
         },
         options: {
             responsive: true,
@@ -282,23 +254,24 @@ async function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } },
-                x: { grid: { display: false } }
-            }
-        }
+                x: { grid: { display: false } },
+            },
+        },
     });
 
     // 2. Tempo Médio por Status
-    const statusInfo = (statusData && statusData.labels && statusData.labels.length > 0)
-        ? statusData
-        : demoStatusTimes();
+    const statusLabels = (statusData && statusData.labels && statusData.labels.length > 0)
+        ? statusData.labels : [];
+    const statusValues = (statusData && statusData.data && statusData.data.length > 0)
+        ? statusData.data : [];
 
     charts.statusTimes = new Chart(document.getElementById('chart-status-times'), {
         type: 'bar',
         data: {
-            labels: statusInfo.labels,
+            labels: statusLabels,
             datasets: [{
                 label: 'Tempo médio (min)',
-                data: statusInfo.data,
+                data: statusValues,
                 backgroundColor: [
                     CHART_COLORS.warning,
                     CHART_COLORS.info,
@@ -308,7 +281,7 @@ async function initCharts() {
                     CHART_COLORS.danger,
                 ],
                 borderRadius: 4,
-            }]
+            }],
         },
         options: {
             indexAxis: 'y',
@@ -317,26 +290,27 @@ async function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } },
-                y: { grid: { display: false } }
-            }
-        }
+                y: { grid: { display: false } },
+            },
+        },
     });
 
     // 3. Top Restaurantes
-    const restInfo = (restaurantsData && restaurantsData.labels && restaurantsData.labels.length > 0)
-        ? restaurantsData
-        : demoTopRestaurants();
+    const restLabels = (restaurantsData && restaurantsData.labels && restaurantsData.labels.length > 0)
+        ? restaurantsData.labels : [];
+    const restValues = (restaurantsData && restaurantsData.data && restaurantsData.data.length > 0)
+        ? restaurantsData.data : [];
 
     charts.topRestaurants = new Chart(document.getElementById('chart-top-restaurants'), {
         type: 'bar',
         data: {
-            labels: restInfo.labels,
+            labels: restLabels,
             datasets: [{
                 label: 'Pedidos',
-                data: restInfo.data,
+                data: restValues,
                 backgroundColor: CHART_COLORS.palette,
                 borderRadius: 4,
-            }]
+            }],
         },
         options: {
             indexAxis: 'y',
@@ -345,28 +319,29 @@ async function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } },
-                y: { grid: { display: false } }
-            }
-        }
+                y: { grid: { display: false } },
+            },
+        },
     });
 
     // 4. Histograma de Tempo de Entrega
-    const histInfo = (histogramData && histogramData.labels && histogramData.labels.length > 0)
-        ? histogramData
-        : demoDeliveryHistogram();
+    const histLabels = (histogramData && histogramData.labels && histogramData.labels.length > 0)
+        ? histogramData.labels : [];
+    const histValues = (histogramData && histogramData.data && histogramData.data.length > 0)
+        ? histogramData.data : [];
 
     charts.deliveryHistogram = new Chart(document.getElementById('chart-delivery-histogram'), {
         type: 'bar',
         data: {
-            labels: histInfo.labels,
+            labels: histLabels,
             datasets: [{
                 label: 'Entregas',
-                data: histInfo.data,
+                data: histValues,
                 backgroundColor: CHART_COLORS.secondaryFill,
                 borderColor: CHART_COLORS.secondary,
                 borderWidth: 1.5,
                 borderRadius: 4,
-            }]
+            }],
         },
         options: {
             responsive: true,
@@ -374,23 +349,16 @@ async function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } },
-                x: { grid: { display: false }, title: { display: true, text: 'Tempo (min)' } }
-            }
-        }
+                x: { grid: { display: false }, title: { display: true, text: 'Tempo (min)' } },
+            },
+        },
     });
 
-    // 5. Heatmap de Demanda (Analytics tab) — using scatter chart
+    // 5. Heatmap de Demanda (aba Analytics)
     const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    let heatmapPoints;
-    if (heatmapData && heatmapData.data && heatmapData.data.length > 0) {
-        heatmapPoints = heatmapData.data.map(p => ({
-            x: p.x,
-            y: p.y,
-            r: Math.sqrt(p.v || 1) * 2,
-        }));
-    } else {
-        heatmapPoints = demoDemandHeatmap();
-    }
+    const heatmapPoints = (heatmapData && heatmapData.data && heatmapData.data.length > 0)
+        ? heatmapData.data.map(p => ({ x: p.x, y: p.y, r: Math.sqrt(p.v || 1) * 2 }))
+        : [];
 
     charts.demandHeatmap = new Chart(document.getElementById('chart-demand-heatmap'), {
         type: 'bubble',
@@ -401,7 +369,7 @@ async function initCharts() {
                 backgroundColor: 'rgba(99, 102, 241, 0.4)',
                 borderColor: 'rgba(99, 102, 241, 0.6)',
                 borderWidth: 1,
-            }]
+            }],
         },
         options: {
             responsive: true,
@@ -411,69 +379,63 @@ async function initCharts() {
                 x: {
                     min: 0, max: 23,
                     title: { display: true, text: 'Hora do dia' },
-                    grid: { color: 'rgba(255,255,255,0.03)' }
+                    grid: { color: 'rgba(255,255,255,0.03)' },
                 },
                 y: {
                     min: -0.5, max: 6.5,
                     ticks: { callback: (v) => days[Math.round(v)] || '' },
-                    grid: { color: 'rgba(255,255,255,0.03)' }
-                }
-            }
-        }
+                    grid: { color: 'rgba(255,255,255,0.03)' },
+                },
+            },
+        },
     });
 
     // 6. Pedidos por Região
-    const regInfo = (regionData && regionData.labels && regionData.labels.length > 0)
-        ? regionData
-        : demoRegionDistribution();
+    const regLabels = (regionData && regionData.labels && regionData.labels.length > 0)
+        ? regionData.labels : [];
+    const regValues = (regionData && regionData.data && regionData.data.length > 0)
+        ? regionData.data : [];
 
     charts.regionDist = new Chart(document.getElementById('chart-region-dist'), {
         type: 'doughnut',
         data: {
-            labels: regInfo.labels,
+            labels: regLabels,
             datasets: [{
-                data: regInfo.data,
-                backgroundColor: CHART_COLORS.palette.slice(0, regInfo.labels.length),
+                data: regValues,
+                backgroundColor: CHART_COLORS.palette.slice(0, Math.max(regLabels.length, 1)),
                 borderWidth: 0,
-            }]
+            }],
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            plugins: {
-                legend: { position: 'bottom', labels: { padding: 16 } }
-            },
+            plugins: { legend: { position: 'bottom', labels: { padding: 16 } } },
             cutout: '60%',
-        }
+        },
     });
 
-    // 7. Predição de Demanda (agora integrado com ml-inference)
+    // 7. Predição de Demanda — apenas dados reais do ml-inference
     const nextHours = Array.from({length: 8}, (_, i) => {
         const d = new Date();
         d.setHours(d.getHours() + i + 1);
-        return {
-            label: `${d.getHours()}h`,
-            hour: d.getHours(),
-            day: d.getDay()
-        };
+        return { label: `${d.getHours()}h`, hour: d.getHours(), day: d.getDay() };
     });
 
-    let predictions = [];
+    let predictions = Array(8).fill(0);
     try {
-        // Tentar obter predições reais do ml-inference para o centro de SP
-        const promises = nextHours.map(h => 
-            apiPost('/api/predictions/demand', {
+        const results = await Promise.all(
+            nextHours.map(h => apiPost('/api/predictions/demand', {
                 region_lat: -23.55,
                 region_lon: -46.63,
                 hour: h.hour,
-                day_of_week: h.day
-            })
+                day_of_week: h.day,
+            }))
         );
-        const results = await Promise.all(promises);
-        predictions = results.map(r => r ? r.predicted_orders_per_hour : Math.floor(Math.random() * 40 + 10));
+        if (results.some(r => r && r.predicted_orders_per_hour > 0)) {
+            predictions = results.map(r => (r ? r.predicted_orders_per_hour : 0));
+        }
     } catch (e) {
-        console.warn("Falha ao obter predições reais, usando fallback");
-        predictions = nextHours.map(() => Math.floor(Math.random() * 40 + 10));
+        console.warn('ML Inference indisponível:', e);
     }
 
     charts.demandPrediction = new Chart(document.getElementById('chart-demand-prediction'), {
@@ -489,7 +451,7 @@ async function initCharts() {
                 tension: 0.4,
                 pointRadius: 4,
                 pointBackgroundColor: CHART_COLORS.primary,
-            }]
+            }],
         },
         options: {
             responsive: true,
@@ -497,9 +459,9 @@ async function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' } },
-                x: { grid: { display: false } }
-            }
-        }
+                x: { grid: { display: false } },
+            },
+        },
     });
 }
 
@@ -538,21 +500,18 @@ const chatMessages = document.getElementById('chat-messages');
 async function sendChatMessage(message) {
     if (!message.trim()) return;
 
-    // Add user message to UI
     appendChatMessage(message, 'user');
     chatInput.value = '';
     chatSendBtn.disabled = true;
 
-    // Add to history
     chatHistory.push({ role: 'user', content: message });
 
-    // Show typing indicator
     const typingEl = appendChatMessage('...', 'bot', true);
 
     try {
         const response = await apiPost('/api/chat', {
             message: message,
-            history: chatHistory.slice(-10), // últimos 10 turnos
+            history: chatHistory.slice(-10),
         });
 
         typingEl.remove();
@@ -599,7 +558,17 @@ chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendChatMessage(chatInput.value);
 });
 
-// Suggestion chips
+// ============================================================
+// ORDERS FILTER / SEARCH
+// ============================================================
+document.getElementById('order-filter').addEventListener('change', loadOrders);
+
+let _searchDebounce = null;
+document.getElementById('order-search').addEventListener('input', () => {
+    clearTimeout(_searchDebounce);
+    _searchDebounce = setTimeout(loadOrders, 350);
+});
+
 document.querySelectorAll('.suggestion-chip').forEach(chip => {
     chip.addEventListener('click', () => {
         const msg = chip.dataset.msg;
@@ -609,16 +578,21 @@ document.querySelectorAll('.suggestion-chip').forEach(chip => {
 });
 
 // ============================================================
-// ORDERS TABLE
+// ORDERS TABLE — apenas dados reais
 // ============================================================
 async function loadOrders() {
     const tbody = document.getElementById('orders-tbody');
-    const data = await apiGet('/api/orders?limit=20');
-    const rows = [];
+    const statusFilter = document.getElementById('order-filter').value;
+    const searchTerm = document.getElementById('order-search').value.trim();
+
+    let path = '/api/orders?limit=50';
+    if (statusFilter) path += `&status=${encodeURIComponent(statusFilter)}`;
+    if (searchTerm) path += `&search=${encodeURIComponent(searchTerm)}`;
+
+    const data = await apiGet(path);
 
     if (data && Array.isArray(data) && data.length > 0) {
-        // Dados reais do backend
-        for (const order of data) {
+        tbody.innerHTML = data.map(order => {
             const statusClass = order.status.toLowerCase().replace(/_/g, '_');
             const time = order.estimated_time ? `${Math.round(order.estimated_time)} min` : '—';
             const date = order.created_at ? new Date(order.created_at).toLocaleTimeString('pt-BR') : '—';
@@ -626,7 +600,7 @@ async function loadOrders() {
             const restaurant = order.restaurant_name || 'Desconhecido';
             const courier = order.courier_name || '—';
 
-            rows.push(`
+            return `
                 <tr>
                     <td><code>${order.id.slice(0, 8)}...</code></td>
                     <td><span class="status-badge ${statusClass}">${order.status}</span></td>
@@ -636,47 +610,31 @@ async function loadOrders() {
                     <td>${time}</td>
                     <td>${date}</td>
                 </tr>
-            `);
-        }
+            `;
+        }).join('');
     } else {
-        // Fallback demo
-        const statuses = ['CONFIRMED', 'PREPARING', 'READY_FOR_PICKUP', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'];
-        for (let i = 0; i < 20; i++) {
-            const status = statuses[Math.floor(Math.random() * statuses.length)];
-            const statusClass = status.toLowerCase().replace(/_/g, '_');
-            const time = (Math.random() * 30 + 10).toFixed(1);
-            const date = new Date(Date.now() - Math.random() * 86400000);
-
-            rows.push(`
-                <tr>
-                    <td><code>${crypto.randomUUID().slice(0, 8)}...</code></td>
-                    <td><span class="status-badge ${statusClass}">${status}</span></td>
-                    <td>Customer_${Math.floor(Math.random() * 50)}</td>
-                    <td>Restaurant_${Math.floor(Math.random() * 20)}</td>
-                    <td>Courier_${Math.floor(Math.random() * 150)}</td>
-                    <td>${time} min</td>
-                    <td>${date.toLocaleTimeString('pt-BR')}</td>
-                </tr>
-            `);
-        }
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted)">
+                    Nenhum pedido encontrado. Execute o simulador ou crie pedidos via API.
+                </td>
+            </tr>
+        `;
     }
-
-    tbody.innerHTML = rows.join('');
 }
 
 // ============================================================
-// COURIERS GRID
+// COURIERS GRID — apenas dados reais
 // ============================================================
 async function loadCouriers() {
     const grid = document.getElementById('couriers-grid');
     const data = await apiGet('/api/couriers');
-    const cards = [];
 
     if (data && Array.isArray(data) && data.length > 0) {
-        // Dados reais do backend
-        for (const courier of data) {
-            const vehicleEmoji = courier.vehicle_type === 'moto' ? '🏍️' : '🚲';
-            cards.push(`
+        grid.innerHTML = data.map(courier => {
+            const v = (courier.vehicle_type || '').toLowerCase();
+            const vehicleEmoji = v === 'moto' ? '🏍️' : v === 'carro' ? '🚗' : '🚲';
+            return `
                 <div class="courier-card">
                     <div class="courier-avatar">${vehicleEmoji}</div>
                     <div class="courier-info">
@@ -685,29 +643,15 @@ async function loadCouriers() {
                     </div>
                     <span class="courier-status ${courier.status.toLowerCase()}">${courier.status}</span>
                 </div>
-            `);
-        }
+            `;
+        }).join('');
     } else {
-        // Fallback demo
-        for (let i = 0; i < 24; i++) {
-            const status = Math.random() > 0.4 ? 'AVAILABLE' : 'BUSY';
-            const vehicle = Math.random() > 0.5 ? 'moto' : 'bicicleta';
-            const vehicleEmoji = vehicle === 'moto' ? '🏍️' : '🚲';
-
-            cards.push(`
-                <div class="courier-card">
-                    <div class="courier-avatar">${vehicleEmoji}</div>
-                    <div class="courier-info">
-                        <div class="courier-name">Courier_${i}</div>
-                        <div class="courier-vehicle">${vehicle}</div>
-                    </div>
-                    <span class="courier-status ${status.toLowerCase()}">${status}</span>
-                </div>
-            `);
-        }
+        grid.innerHTML = `
+            <p class="empty-state">
+                Nenhum entregador cadastrado. Execute o simulador ou registre entregadores via API.
+            </p>
+        `;
     }
-
-    grid.innerHTML = cards.join('');
 }
 
 // ============================================================
@@ -719,33 +663,45 @@ document.getElementById('btn-refresh').addEventListener('click', async () => {
     loadCouriers();
     loadAnomalies();
 
-    // Refresh chart data
-    const [ordersData, statusData, restaurantsData, histogramData] =
+    const [ordersData, statusData, restaurantsData, histogramData, heatmapData, regionData] =
         await Promise.all([
             dashboardGet('/api/dashboard/orders-per-hour'),
             dashboardGet('/api/dashboard/status-times'),
             dashboardGet('/api/dashboard/top-restaurants'),
             dashboardGet('/api/dashboard/delivery-histogram'),
+            dashboardGet('/api/dashboard/demand-heatmap'),
+            dashboardGet('/api/dashboard/region-distribution'),
         ]);
 
-    if (ordersData && ordersData.data && charts.ordersVolume) {
-        charts.ordersVolume.data.datasets[0].data = ordersData.data;
+    if (charts.ordersVolume) {
+        charts.ordersVolume.data.datasets[0].data =
+            (ordersData && ordersData.data) ? ordersData.data : Array(24).fill(0);
         charts.ordersVolume.update();
     }
-    if (statusData && statusData.labels && charts.statusTimes) {
+    if (charts.statusTimes && statusData && statusData.labels) {
         charts.statusTimes.data.labels = statusData.labels;
         charts.statusTimes.data.datasets[0].data = statusData.data;
         charts.statusTimes.update();
     }
-    if (restaurantsData && restaurantsData.labels && charts.topRestaurants) {
+    if (charts.topRestaurants && restaurantsData && restaurantsData.labels) {
         charts.topRestaurants.data.labels = restaurantsData.labels;
         charts.topRestaurants.data.datasets[0].data = restaurantsData.data;
         charts.topRestaurants.update();
     }
-    if (histogramData && histogramData.labels && charts.deliveryHistogram) {
+    if (charts.deliveryHistogram && histogramData && histogramData.labels) {
         charts.deliveryHistogram.data.labels = histogramData.labels;
         charts.deliveryHistogram.data.datasets[0].data = histogramData.data;
         charts.deliveryHistogram.update();
+    }
+    if (charts.demandHeatmap && heatmapData && heatmapData.data) {
+        charts.demandHeatmap.data.datasets[0].data =
+            heatmapData.data.map(p => ({ x: p.x, y: p.y, r: Math.sqrt(p.v || 1) * 2 }));
+        charts.demandHeatmap.update();
+    }
+    if (charts.regionDist && regionData && regionData.labels) {
+        charts.regionDist.data.labels = regionData.labels;
+        charts.regionDist.data.datasets[0].data = regionData.data;
+        charts.regionDist.update();
     }
 });
 
@@ -760,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCouriers();
     loadAnomalies();
 
-    // Auto-refresh every 30s
+    // Auto-refresh a cada 30s
     setInterval(() => {
         checkSystemStatus();
         loadKPIs();

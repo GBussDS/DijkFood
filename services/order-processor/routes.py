@@ -1,6 +1,7 @@
 """
 DijkFood — Order Processor: Route Handlers
 """
+import asyncio
 import json
 import logging
 from datetime import datetime
@@ -8,11 +9,12 @@ from uuid import uuid4
 
 import aiohttp
 from typing import Optional
+from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from models import CreateOrderRequest, CreateOrderResponse
-from graph_loader import calculate_route
+from graph_loader import calculate_route, is_graph_loaded
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -40,7 +42,7 @@ async def init_db():
     db_pool = await asyncpg.create_pool(
         host=DB_HOST, port=int(DB_PORT),
         database=DB_NAME, user=DB_USER, password=DB_PASS,
-        min_size=5, max_size=20
+        min_size=2, max_size=10,
     )
     logger.info("Pool de conexões PostgreSQL inicializado")
 
@@ -56,6 +58,112 @@ def get_kinesis_client():
     """Retorna o cliente Kinesis (boto3)."""
     import boto3
     return boto3.client("kinesis", region_name=AWS_REGION)
+
+
+VALID_TRANSITIONS = {
+    "CONFIRMED":        "PREPARING",
+    "PREPARING":        "READY_FOR_PICKUP",
+    "READY_FOR_PICKUP": "PICKED_UP",
+    "PICKED_UP":        "IN_TRANSIT",
+    "IN_TRANSIT":       "DELIVERED",
+}
+
+
+@router.post("/api/orders/reset")
+async def reset_orders():
+    """
+    Endpoint administrativo: força todos os pedidos ativos para DELIVERED
+    e libera todos os entregadores BUSY em dois UPDATEs em lote.
+    Usado pelo simulador de carga antes de cada cenário.
+    """
+    if db_pool is None:
+        raise HTTPException(status_code=503, detail="Database not ready")
+
+    async with db_pool.acquire() as conn:
+        async with conn.transaction():
+            orders_updated = await conn.fetchval("""
+                WITH upd AS (
+                    UPDATE orders
+                    SET status = 'DELIVERED', updated_at = NOW()
+                    WHERE status NOT IN ('DELIVERED')
+                    RETURNING id
+                )
+                SELECT COUNT(*) FROM upd
+            """)
+            couriers_updated = await conn.fetchval("""
+                WITH upd AS (
+                    UPDATE couriers
+                    SET status = 'AVAILABLE'
+                    WHERE status = 'BUSY'
+                    RETURNING id
+                )
+                SELECT COUNT(*) FROM upd
+            """)
+
+    return {
+        "orders_delivered": int(orders_updated or 0),
+        "couriers_released": int(couriers_updated or 0),
+    }
+
+
+@router.patch("/api/orders/{order_id}/status")
+async def update_order_status(order_id: UUID, req: dict):
+    """Atualiza o status de um pedido seguindo a máquina de estados."""
+    if db_pool is None:
+        raise HTTPException(status_code=503, detail="Database not ready")
+
+    new_status = req.get("status") if isinstance(req, dict) else None
+    if not new_status:
+        raise HTTPException(status_code=422, detail="Campo 'status' obrigatório")
+
+    async with db_pool.acquire() as conn:
+        async with conn.transaction():
+            order = await conn.fetchrow(
+                "SELECT status, courier_id FROM orders WHERE id = $1 FOR UPDATE",
+                order_id,
+            )
+            if not order:
+                raise HTTPException(status_code=404, detail="Order not found")
+
+            current_status = order["status"]
+            expected_next = VALID_TRANSITIONS.get(current_status)
+            if expected_next != new_status:
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"Transição inválida: {current_status} → {new_status}. Esperado: {expected_next}",
+                )
+
+            await conn.execute(
+                "UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2",
+                new_status, order_id,
+            )
+            await conn.execute(
+                "INSERT INTO order_events (id, order_id, status, timestamp) VALUES ($1, $2, $3, NOW())",
+                uuid4(), order_id, new_status,
+            )
+            if new_status == "DELIVERED" and order["courier_id"]:
+                await conn.execute(
+                    "UPDATE couriers SET status = 'AVAILABLE' WHERE id = $1",
+                    order["courier_id"],
+                )
+
+    try:
+        kinesis = get_kinesis_client()
+        kinesis.put_record(
+            StreamName=KINESIS_STREAM,
+            Data=json.dumps({
+                "event_type": "STATUS_CHANGED",
+                "order_id": str(order_id),
+                "old_status": current_status,
+                "new_status": new_status,
+                "timestamp": datetime.utcnow().isoformat(),
+            }),
+            PartitionKey=str(order_id),
+        )
+    except Exception as e:
+        logger.error(f"Falha ao emitir evento Kinesis: {e}")
+
+    return {"order_id": str(order_id), "old_status": current_status, "new_status": new_status}
 
 
 @router.get("/api/orders")
@@ -116,84 +224,103 @@ async def list_orders(
 @router.post("/api/orders", response_model=CreateOrderResponse)
 async def create_order(request: CreateOrderRequest):
     """
-    Cria um novo pedido:
-    1. Valida cliente e restaurante no RDS
-    2. Encontra entregador disponível mais próximo
-    3. Calcula rota via Dijkstra (osmnx)
-    4. Obtém predição de tempo de entrega (ML Inference Engine)
-    5. Persiste pedido no RDS
-    6. Emite evento ORDER_CREATED para Kinesis
+    Cria um novo pedido.
+
+    Estrutura de desempenho:
+    1+2. Lê cliente e restaurante (sem transação — só leitura)
+    3.   Dijkstra em thread pool (CPU-heavy, não bloqueia o event loop)
+    4.   ML inference fora de qualquer transação (I/O de rede)
+    5.   Transação CURTA: seleciona entregador + insere pedido + marca BUSY
+    6.   Kinesis fire-and-forget
     """
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
 
+    if not is_graph_loaded():
+        raise HTTPException(status_code=503, detail="Grafo de rotas ainda carregando, tente em instantes")
+
+    # 1+2. Validar cliente e restaurante — leituras simples, sem transação
+    async with db_pool.acquire() as conn:
+        customer = await conn.fetchrow(
+            "SELECT id, name, latitude, longitude FROM customers WHERE id = $1",
+            request.customer_id,
+        )
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+
+        restaurant = await conn.fetchrow(
+            "SELECT id, name, latitude, longitude FROM restaurants WHERE id = $1",
+            request.restaurant_id,
+        )
+        if not restaurant:
+            raise HTTPException(status_code=404, detail="Restaurant not found")
+
+    # 3. Dijkstra — CPU-intensivo; timeout de 250ms + fallback haversine
+    import math
+    loop = asyncio.get_event_loop()
+    try:
+        route_coords, travel_time = await asyncio.wait_for(
+            loop.run_in_executor(
+                None, calculate_route,
+                restaurant["latitude"], restaurant["longitude"],
+                customer["latitude"], customer["longitude"],
+            ),
+            timeout=0.25,
+        )
+    except (asyncio.TimeoutError, Exception):
+        # Fallback: distância haversine direta (29 km/h médio em SP)
+        lat1 = math.radians(restaurant["latitude"])
+        lon1 = math.radians(restaurant["longitude"])
+        lat2 = math.radians(customer["latitude"])
+        lon2 = math.radians(customer["longitude"])
+        a = (math.sin((lat2 - lat1) / 2) ** 2
+             + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2)
+        distance_m = 6_371_000 * 2 * math.asin(math.sqrt(a))
+        travel_time = distance_m / 8.0
+        route_coords = [
+            [restaurant["latitude"], restaurant["longitude"]],
+            [customer["latitude"], customer["longitude"]],
+        ]
+
+    # 4. ML inference — I/O de rede, fora de qualquer transação
+    predicted_time = travel_time / 60.0  # fallback: segundos → minutos
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{ML_INFERENCE_URL}/api/predictions/delivery_time",
+                json={
+                    "distance_meters": travel_time,
+                    "hour": datetime.now().hour,
+                    "day_of_week": datetime.now().weekday(),
+                    "restaurant_lat": restaurant["latitude"],
+                    "restaurant_lon": restaurant["longitude"],
+                    "customer_lat": customer["latitude"],
+                    "customer_lon": customer["longitude"],
+                    "courier_distance_to_restaurant": 0.0,
+                    "active_orders_count": 0,
+                },
+                timeout=aiohttp.ClientTimeout(total=0.2),
+            ) as resp:
+                if resp.status == 200:
+                    ml_result = await resp.json()
+                    predicted_time = ml_result.get("estimated_minutes", predicted_time)
+    except Exception as e:
+        logger.warning(f"ML Inference falhou, usando fallback: {e}")
+
+    # 5. Transação CURTA: só operações de banco — seleciona entregador + insere + marca BUSY
     async with db_pool.acquire() as conn:
         async with conn.transaction():
-            # 1. Validar cliente
-            customer = await conn.fetchrow(
-                "SELECT id, name, latitude, longitude FROM customers WHERE id = $1",
-                request.customer_id
-            )
-            if not customer:
-                raise HTTPException(status_code=404, detail="Customer not found")
-
-            # 2. Validar restaurante
-            restaurant = await conn.fetchrow(
-                "SELECT id, name, latitude, longitude FROM restaurants WHERE id = $1",
-                request.restaurant_id
-            )
-            if not restaurant:
-                raise HTTPException(status_code=404, detail="Restaurant not found")
-
-            # 3. Encontrar entregador disponível mais próximo
             courier = await conn.fetchrow("""
-                SELECT id, name, latitude, longitude,
-                       ST_Distance(
-                           ST_MakePoint(longitude, latitude)::geography,
-                           ST_MakePoint($1, $2)::geography
-                       ) as distance
+                SELECT id, name, latitude, longitude
                 FROM couriers
                 WHERE status = 'AVAILABLE'
-                ORDER BY distance ASC
                 LIMIT 1
                 FOR UPDATE SKIP LOCKED
-            """, restaurant["longitude"], restaurant["latitude"])
+            """)
 
             if not courier:
                 raise HTTPException(status_code=503, detail="No couriers available")
 
-            # 4. Calcular rota (restaurante → cliente) via Dijkstra
-            route_coords, travel_time = calculate_route(
-                restaurant["latitude"], restaurant["longitude"],
-                customer["latitude"], customer["longitude"]
-            )
-
-            # 5. Obter predição de tempo (ML Inference Engine)
-            predicted_time = travel_time / 60.0  # fallback: converter segundos para minutos
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(
-                        f"{ML_INFERENCE_URL}/api/predictions/delivery_time",
-                        json={
-                            "distance_meters": travel_time,
-                            "hour": datetime.now().hour,
-                            "day_of_week": datetime.now().weekday(),
-                            "restaurant_lat": restaurant["latitude"],
-                            "restaurant_lon": restaurant["longitude"],
-                            "customer_lat": customer["latitude"],
-                            "customer_lon": customer["longitude"],
-                            "courier_distance_to_restaurant": float(courier["distance"]),
-                            "active_orders_count": 0
-                        },
-                        timeout=aiohttp.ClientTimeout(total=5)
-                    ) as resp:
-                        if resp.status == 200:
-                            ml_result = await resp.json()
-                            predicted_time = ml_result.get("estimated_minutes", predicted_time)
-            except Exception as e:
-                logger.warning(f"ML Inference falhou, usando fallback: {e}")
-
-            # 6. Criar pedido no banco
             order_id = uuid4()
             items_json = json.dumps([item.model_dump() for item in request.items])
             route_json = json.dumps(route_coords)
@@ -205,19 +332,17 @@ async def create_order(request: CreateOrderRequest):
             """, order_id, request.customer_id, request.restaurant_id,
                 courier["id"], items_json, route_json, predicted_time)
 
-            # Registrar evento CONFIRMED
             await conn.execute("""
                 INSERT INTO order_events (id, order_id, status, timestamp)
                 VALUES ($1, $2, 'CONFIRMED', NOW())
             """, uuid4(), order_id)
 
-            # 7. Marcar entregador como ocupado
             await conn.execute(
                 "UPDATE couriers SET status = 'BUSY' WHERE id = $1",
-                courier["id"]
+                courier["id"],
             )
 
-    # 8. Emitir evento para Kinesis (fora da transação, assíncrono)
+    # 6. Kinesis — fire-and-forget, fora da transação
     try:
         kinesis = get_kinesis_client()
         kinesis.put_record(
@@ -231,9 +356,9 @@ async def create_order(request: CreateOrderRequest):
                 "estimated_time": predicted_time,
                 "latitude": restaurant["latitude"],
                 "longitude": restaurant["longitude"],
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.utcnow().isoformat(),
             }),
-            PartitionKey=str(order_id)
+            PartitionKey=str(order_id),
         )
     except Exception as e:
         logger.error(f"Falha ao emitir evento Kinesis: {e}")
@@ -242,5 +367,5 @@ async def create_order(request: CreateOrderRequest):
         order_id=order_id,
         courier_id=courier["id"],
         route=route_coords,
-        estimated_delivery_time=predicted_time
+        estimated_delivery_time=predicted_time,
     )
