@@ -49,7 +49,7 @@ variable "private_subnet_cidrs" {
 
 variable "db_instance_class" {
   type    = string
-  default = "db.t3.micro"
+  default = "db.t3.medium"
 }
 
 variable "db_name" {
@@ -112,7 +112,7 @@ variable "services" {
       memory         = "4096"
       path_patterns  = ["/api/orders*"]
       priority       = 1
-      min_tasks      = 2
+      min_tasks      = 4
       max_tasks      = 10
       scaling_target = 70
     },
@@ -123,8 +123,8 @@ variable "services" {
       memory         = "1024"
       path_patterns  = ["/api/customers*", "/api/restaurants*", "/api/couriers*"]
       priority       = 2
-      min_tasks      = 2
-      max_tasks      = 8
+      min_tasks      = 4
+      max_tasks      = 10
       scaling_target = 70
     },
     {
