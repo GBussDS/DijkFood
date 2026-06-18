@@ -1,7 +1,3 @@
-"""
-DijkFood — Order Management: FastAPI Application
-Microsserviço responsável pelo CRUD de entidades e gerenciamento de status de pedidos.
-"""
 import logging
 from contextlib import asynccontextmanager
 

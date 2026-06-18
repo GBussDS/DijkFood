@@ -1,11 +1,3 @@
-"""
-DijkFood — Dashboard Analytics: FastAPI Application
-Microsserviço que expõe métricas operacionais e analíticas para o frontend.
-
-Duplo modo de operação:
-  - AWS (produção): Athena para dados históricos + RDS para tempo real
-  - Local (docker-compose): apenas RDS/PostgreSQL como fallback
-"""
 import json
 import logging
 import os
@@ -20,14 +12,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from queries import (
-    # Athena queries
     ATHENA_ORDERS_PER_HOUR,
     ATHENA_STATUS_TIMES,
     ATHENA_TOP_RESTAURANTS,
     ATHENA_DELIVERY_HISTOGRAM,
     ATHENA_DEMAND_HEATMAP,
     ATHENA_REGION_DISTRIBUTION,
-    # Postgres fallback queries
     PG_SUMMARY,
     PG_ORDERS_PER_HOUR,
     PG_STATUS_TIMES,
@@ -35,7 +25,6 @@ from queries import (
     PG_DELIVERY_HISTOGRAM,
     PG_DEMAND_HEATMAP,
     PG_REGION_DISTRIBUTION,
-    # Runners
     run_athena_query,
     run_pg_query,
     run_pg_fetchrow,
@@ -56,12 +45,10 @@ DB_NAME = os.environ.get("DB_NAME", "dijkfood")
 DB_USER = os.environ.get("DB_USER", "dijkfood")
 DB_PASS = os.environ.get("DB_PASS", "dijkfood")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
-# Injetados pelo Terraform via task definition (ver compute.tf → dashboard_service)
 ATHENA_DATABASE = os.environ.get("ATHENA_DATABASE", "")
 ATHENA_OUTPUT = os.environ.get("ATHENA_OUTPUT", "")
 DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "anomalies")
 
-# Sinaliza se Athena está disponível (tenta na primeira chamada)
 athena_available: Optional[bool] = None
 db_pool = None
 
@@ -74,7 +61,6 @@ async def lifespan(app: FastAPI):
     global db_pool
     logger.info("=== Dashboard Analytics — Startup ===")
 
-    # Inicializar pool PostgreSQL
     try:
         db_pool = await asyncpg.create_pool(
             host=DB_HOST,
@@ -120,7 +106,7 @@ app.add_middleware(
 # HELPERS
 # ============================================================
 def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
-    """Tenta executar no Athena; retorna None se indisponível ou não configurado."""
+
     global athena_available
     if athena_available is False:
         return None
@@ -136,7 +122,6 @@ def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
 
 
 def _safe_float(val, default=0.0):
-    """Converte valor para float de forma segura."""
     if val is None:
         return default
     try:
@@ -146,7 +131,6 @@ def _safe_float(val, default=0.0):
 
 
 def _safe_int(val, default=0):
-    """Converte valor para int de forma segura."""
     if val is None:
         return default
     try:
@@ -171,6 +155,7 @@ class HealthResponse(BaseModel):
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
+
     return HealthResponse(
         status="ok",
         service="dashboard-analytics",
@@ -181,7 +166,7 @@ async def health():
 
 @app.get("/api/dashboard/summary")
 async def dashboard_summary():
-    """KPIs operacionais em tempo real (via RDS)."""
+
     if db_pool is None:
         return {"orders_today": 0, "active_orders": 0,
                 "available_couriers": 0, "avg_delivery_time": 0}
@@ -201,11 +186,9 @@ async def dashboard_summary():
 
 @app.get("/api/dashboard/orders-per-hour")
 async def orders_per_hour():
-    """Volume de pedidos agrupados por hora."""
-    # Tentar Athena primeiro
+
     data = _try_athena(ATHENA_ORDERS_PER_HOUR)
     if data is not None:
-        # Preencher 24h
         hour_map = {_safe_int(r["hora"]): _safe_int(r["total"]) for r in data}
         return {
             "labels": [f"{h}h" for h in range(24)],
@@ -213,7 +196,6 @@ async def orders_per_hour():
             "source": "athena",
         }
 
-    # Fallback PostgreSQL
     if db_pool:
         rows = await run_pg_query(db_pool, PG_ORDERS_PER_HOUR)
         hour_map = {_safe_int(r["hora"]): _safe_int(r["total"]) for r in rows}
@@ -228,7 +210,7 @@ async def orders_per_hour():
 
 @app.get("/api/dashboard/status-times")
 async def status_times():
-    """Tempo médio (minutos) em cada status do pedido."""
+
     data = _try_athena(ATHENA_STATUS_TIMES)
     if data is not None:
         return {
@@ -250,7 +232,7 @@ async def status_times():
 
 @app.get("/api/dashboard/top-restaurants")
 async def top_restaurants():
-    """Top 10 restaurantes por volume de pedidos."""
+
     data = _try_athena(ATHENA_TOP_RESTAURANTS)
     if data is not None:
         return {
@@ -272,7 +254,7 @@ async def top_restaurants():
 
 @app.get("/api/dashboard/delivery-histogram")
 async def delivery_histogram():
-    """Histograma de tempo total de entrega (buckets de 5 min)."""
+
     data = _try_athena(ATHENA_DELIVERY_HISTOGRAM)
     if data is not None:
         return {
@@ -296,7 +278,7 @@ async def delivery_histogram():
 
 @app.get("/api/dashboard/demand-heatmap")
 async def demand_heatmap():
-    """Heatmap de demanda: dia da semana × hora."""
+
     data = _try_athena(ATHENA_DEMAND_HEATMAP)
     if data is not None:
         points = [
@@ -320,7 +302,7 @@ async def demand_heatmap():
 
 @app.get("/api/dashboard/region-distribution")
 async def region_distribution():
-    """Distribuição de pedidos por região."""
+
     data = _try_athena(ATHENA_REGION_DISTRIBUTION)
     if data is not None:
         return {
@@ -342,7 +324,7 @@ async def region_distribution():
 
 @app.get("/api/dashboard/anomalies")
 async def anomalies():
-    """Lista anomalias operacionais ativas (DynamoDB)."""
+
     try:
         dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
         table = dynamodb.Table(DYNAMODB_TABLE)

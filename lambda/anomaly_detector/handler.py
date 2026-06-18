@@ -1,13 +1,3 @@
-"""
-DijkFood — Lambda: Anomaly Detector
-Consumidor de eventos Kinesis que detecta anomalias operacionais em tempo real.
-
-Tipos de anomalia detectados:
-1. SLOW_DELIVERY: tempo de entrega > 2× média histórica
-2. STUCK_STATUS: pedido preso em um status por muito tempo
-3. NO_COURIERS: região com demanda mas sem entregadores
-4. ORDER_SPIKE: taxa de pedidos > 3× média para o horário
-"""
 import base64
 import json
 import logging
@@ -26,7 +16,8 @@ historical_table = dynamodb.Table("historical_averages")
 
 
 def lambda_handler(event, context):
-    """Handler principal — processa batch de records do Kinesis."""
+    """processa batch de records do Kinesis"""
+
     anomalies = []
     order_count = 0
 
@@ -52,13 +43,13 @@ def lambda_handler(event, context):
             logger.error(f"Erro ao processar record: {e}")
             continue
 
-    # Verificar spike de pedidos no batch
+    # verificar spike de pedidos no batch
     if order_count > 0:
         anomaly = check_order_spike(order_count)
         if anomaly:
             anomalies.append(anomaly)
 
-    # Persistir anomalias detectadas
+    # persistir anomalias detectadas
     for anomaly in anomalies:
         try:
             anomaly_table.put_item(Item={
@@ -80,13 +71,12 @@ def lambda_handler(event, context):
 
 
 def check_slow_delivery(payload):
-    """Verifica se o tempo de entrega é anômalo (> 2× média)."""
+    """Verifica se o tempo de entrega é anômalo"""
+
     try:
         order_id = payload.get("order_id", "unknown")
         timestamp = payload.get("timestamp", "")
 
-        # Consultar criação do pedido via historical_averages (simplificado)
-        # Em produção, consultaria o RDS ou outro store
         try:
             hist = historical_table.get_item(
                 Key={"metric": "avg_delivery_time", "dimension": "global"}
@@ -95,7 +85,6 @@ def check_slow_delivery(payload):
         except Exception:
             avg_time = 1800  # 30 minutos default
 
-        # Estimar tempo de entrega baseado no estimated_time do evento
         estimated = payload.get("estimated_time")
         if estimated and float(estimated) > avg_time / 60 * 2:  # estimated em minutos, avg em segundos
             return {
@@ -114,25 +103,23 @@ def check_slow_delivery(payload):
 
 
 def check_stuck_status(payload):
-    """Verifica se um pedido está demorando muito em uma transição."""
+    """Verifica se um pedido está demorando muito em uma transição"""
+
     try:
-        # Detectar se a transição demorou muito
-        # Heurística simples: se o evento tem timestamp muito distante do esperado
+        # detectar se a transição demorou muito
         old_status = payload.get("old_status", "")
         new_status = payload.get("new_status", "")
 
-        # Tempos máximos esperados por transição (em segundos)
+        # tempos máximos esperados por transição (em segundos)
         max_times = {
-            "CONFIRMED_PREPARING": 300,        # 5 min
-            "PREPARING_READY_FOR_PICKUP": 1800, # 30 min
-            "READY_FOR_PICKUP_PICKED_UP": 600,  # 10 min
-            "PICKED_UP_IN_TRANSIT": 120,        # 2 min
-            "IN_TRANSIT_DELIVERED": 3600,        # 60 min
+            "CONFIRMED_PREPARING": 300,
+            "PREPARING_READY_FOR_PICKUP": 1800,
+            "READY_FOR_PICKUP_PICKED_UP": 600,
+            "PICKED_UP_IN_TRANSIT": 120,
+            "IN_TRANSIT_DELIVERED": 3600,
         }
 
         key = f"{old_status}_{new_status}"
-        # Nota: para detectar atraso real, precisaríamos comparar com o timestamp do status anterior
-        # Simplificação para o MVP
 
     except Exception as e:
         logger.error(f"Erro em check_stuck_status: {e}")
@@ -141,9 +128,10 @@ def check_stuck_status(payload):
 
 
 def check_order_spike(order_count):
-    """Verifica se há spike na taxa de pedidos."""
+    """Verifica se há spike na taxa de pedidos"""
+
     try:
-        # Consultar média histórica
+        # consultar média histórica
         try:
             hist = historical_table.get_item(
                 Key={"metric": "avg_orders_per_batch", "dimension": "global"}

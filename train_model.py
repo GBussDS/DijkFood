@@ -28,11 +28,17 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("train_model")
 
 
-def extract_data_from_athena(database="dijkfood_analytics", output_location="s3://dijkfood-athena-results/"):
-    """Extrai dados de treinamento do Athena."""
+def extract_data_from_athena(database="dijkfood_analytics", output_location=None):
+    """Extrai dados de treinamento do Athena"""
+
     import boto3
 
     logger.info("Extraindo dados do Athena...")
+
+    if output_location is None:
+        account_id = boto3.client("sts").get_caller_identity()["Account"]
+        output_location = f"s3://dijkfood-athena-results-{account_id}/"
+        logger.info(f"Athena output: {output_location}")
     athena = boto3.client("athena", region_name="us-east-1")
 
     query = """
@@ -61,7 +67,7 @@ def extract_data_from_athena(database="dijkfood_analytics", output_location="s3:
 
     query_id = response["QueryExecutionId"]
 
-    # Aguardar resultado
+    # aguardar resultado
     for _ in range(60):
         result = athena.get_query_execution(QueryExecutionId=query_id)
         state = result["QueryExecution"]["Status"]["State"]
@@ -71,7 +77,7 @@ def extract_data_from_athena(database="dijkfood_analytics", output_location="s3:
             raise RuntimeError(f"Query falhou: {result['QueryExecution']['Status']}")
         time.sleep(2)
 
-    # Buscar resultados
+    # buscar resultados
     results = athena.get_query_results(QueryExecutionId=query_id)
     rows = results["ResultSet"]["Rows"]
 
@@ -92,7 +98,8 @@ def extract_data_from_athena(database="dijkfood_analytics", output_location="s3:
 
 
 def generate_synthetic_data(n_samples=5000):
-    """Gera dados sintéticos para treinamento quando não há dados históricos."""
+    """Gera dados sintéticos para treinamento quando não há dados históricos"""
+
     logger.info(f"Gerando {n_samples} amostras sintéticas...")
 
     np.random.seed(42)
@@ -111,7 +118,6 @@ def generate_synthetic_data(n_samples=5000):
 
     df = pd.DataFrame(data)
 
-    # Gerar target realístico
     base_time = df["distance_meters"] / 500  # 500m/min base
     hour_factor = np.where(
         (df["hour"] >= 11) & (df["hour"] <= 14), 1.3,
@@ -128,7 +134,8 @@ def generate_synthetic_data(n_samples=5000):
 
 
 def train_delivery_time_model(df):
-    """Treina modelo de predição de tempo de entrega."""
+    """Treina modelo de predição de tempo de entrega"""
+
     logger.info("Treinando modelo de delivery_time...")
 
     feature_cols = [
@@ -138,7 +145,6 @@ def train_delivery_time_model(df):
         "courier_distance", "active_orders"
     ]
 
-    # Garantir que todas as colunas existem
     for col in feature_cols:
         if col not in df.columns:
             df[col] = 0
@@ -157,7 +163,6 @@ def train_delivery_time_model(df):
     )
     model.fit(X_train, y_train)
 
-    # Métricas
     y_pred = model.predict(X_test)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
@@ -165,7 +170,6 @@ def train_delivery_time_model(df):
     logger.info(f"  MAE: {mae:.2f} minutos")
     logger.info(f"  R²:  {r2:.4f}")
 
-    # Feature importance
     importances = dict(zip(feature_cols, model.feature_importances_))
     logger.info("  Feature Importance:")
     for feat, imp in sorted(importances.items(), key=lambda x: -x[1]):
@@ -175,10 +179,10 @@ def train_delivery_time_model(df):
 
 
 def train_demand_model(df=None):
-    """Treina modelo de predição de demanda."""
+    """Treina modelo de predição de demanda"""
+
     logger.info("Treinando modelo de demand...")
 
-    # Gerar dados sintéticos de demanda
     np.random.seed(42)
     n = 2000
 
@@ -190,7 +194,6 @@ def train_demand_model(df=None):
     }
     df_demand = pd.DataFrame(data)
 
-    # Target: pedidos/hora
     base = 10
     hour_factor = np.where(
         (df_demand["hour"] >= 11) & (df_demand["hour"] <= 14), 3.0,
@@ -228,7 +231,8 @@ def train_demand_model(df=None):
 
 
 def save_models(delivery_model, demand_model, bucket=None, local_dir="/tmp"):
-    """Salva modelos localmente e opcionalmente no S3."""
+    """Salva modelos localmente e opcionalmente no S3"""
+
     os.makedirs(local_dir, exist_ok=True)
 
     delivery_path = os.path.join(local_dir, "delivery_time_model.pkl")
@@ -249,7 +253,8 @@ def save_models(delivery_model, demand_model, bucket=None, local_dir="/tmp"):
 
 def main():
     parser = argparse.ArgumentParser(description="DijkFood ML Model Training")
-    parser.add_argument("--bucket", help="S3 bucket para salvar modelos")
+    parser.add_argument("--bucket", help="S3 bucket para salvar modelos (use: terraform output -raw s3_models_bucket)")
+    parser.add_argument("--athena-output", default=None, help="S3 URI para resultados do Athena (padrão: auto-detectar da conta)")
     parser.add_argument("--synthetic", action="store_true", help="Usar dados sintéticos (sem Athena)")
     parser.add_argument("--output", default="/tmp", help="Diretório local para modelos")
     args = parser.parse_args()
@@ -258,24 +263,24 @@ def main():
     logger.info("  DijkFood — Pipeline de Treinamento ML")
     logger.info("=" * 60)
 
-    # Extrair dados
+    # extrair dados
     if args.synthetic:
         df = generate_synthetic_data()
     else:
         try:
-            df = extract_data_from_athena()
+            df = extract_data_from_athena(output_location=args.athena_output)
         except Exception as e:
             logger.warning(f"Falha ao extrair do Athena: {e}. Usando dados sintéticos.")
             df = generate_synthetic_data()
 
-    # Treinar modelos
+    # treinar modelos
     delivery_model = train_delivery_time_model(df)
     demand_model = train_demand_model()
 
-    # Salvar
+    # salvar
     save_models(delivery_model, demand_model, bucket=args.bucket, local_dir=args.output)
 
-    logger.info("\n✅ Treinamento concluído!")
+    logger.info("\n Treinamento concluído!")
 
 
 if __name__ == "__main__":

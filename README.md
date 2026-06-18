@@ -1,32 +1,32 @@
-# DijkFood A2 — Plataforma de Delivery AI-Driven na Nuvem
+# DijkFood A2
 
-Plataforma de delivery fictícia construída sobre uma arquitetura de microsserviços orientada a eventos na AWS. Toda a infraestrutura é gerenciada por **Terraform** e os comandos do dia a dia são expostos via **Makefile**.
+Plataforma de delivery com arquitetura na AWS. Toda a infraestrutura é gerenciada por **Terraform** e os comandos do dia a dia são expostos via **Makefile**
 
-Serviços AWS provisionados automaticamente: VPC, ECS Fargate, RDS PostgreSQL, DynamoDB, Kinesis Data Streams, Kinesis Firehose, S3 Data Lake, Glue, Athena, ECR e Application Load Balancer.
+Serviços AWS provisionados automaticamente: VPC, ECS Fargate, RDS PostgreSQL, DynamoDB, Kinesis Data Streams, Kinesis Firehose, S3 Data Lake, Glue, Athena, ECR e Application Load Balancer
 
 ---
 
 ## Pré-requisitos
 
-| Ferramenta | Versão mínima | Para quê |
-|---|---|---|
-| [AWS CLI v2](https://aws.amazon.com/cli/) | 2.x | Autenticar e operar recursos AWS |
-| [Terraform](https://www.terraform.io/downloads) | 1.5+ | Provisionar infraestrutura |
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | qualquer | Build e push das imagens para o ECR |
-| [jq](https://stedolan.github.io/jq/) | qualquer | Parsing de JSON nos scripts |
-| Python 3.12+ | — | Simulador e treinamento de modelos ML |
+| Ferramenta | Versão mínima |
+|---|---|
+| [AWS CLI v2](https://aws.amazon.com/cli/) | 2.x |
+| [Terraform](https://www.terraform.io/downloads) | 1.5+ |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | qualquer |
+| [jq](https://stedolan.github.io/jq/) | qualquer |
+| Python 3.12+ | — |
 
 ---
 
-## Configuração das Credenciais AWS (Dual Profile)
+## Configuração das Credenciais AWS
 
-O projeto exige **dois perfis AWS** porque o Amazon Bedrock não está disponível em contas do AWS Academy e precisa de uma conta pessoal separada.
+O projeto exige **dois perfis AWS** porque o Amazon Bedrock não está disponível em contas do AWS Academy e precisa de uma conta pessoal separada
 
-### Conta principal — AWS Academy / Lab
+### Conta principal - AWS Academy (Learner Lab)
 
-Hospeda 99% da infraestrutura (VPC, ECS, RDS, Kinesis, S3, etc.).
+Hospeda 99% da infraestrutura (VPC, ECS, RDS, Kinesis, S3, etc.)
 
-1. Entre no seu Learner Lab, clique em **AWS Details → Show** ao lado de *AWS CLI*.
+1. No Learner Lab, clique em **AWS Details -> Show** ao lado de *AWS CLI*
 2. Abra `~/.aws/credentials` e cole sob o perfil `[default]`:
 
 ```ini
@@ -36,11 +36,9 @@ aws_secret_access_key=...
 aws_session_token=...
 ```
 
-> As credenciais do Academy expiram a cada algumas horas. Atualize-as antes de qualquer operação.
+### Conta secundária - Amazon Bedrock
 
-### Conta secundária — Amazon Bedrock
-
-1. Na sua conta pessoal, crie um usuário IAM com a policy `AmazonBedrockFullAccess` e gere Access Keys.
+1. Na conta que possui o Bedrock, crie um usuário IAM com a policy `AmazonBedrockFullAccess` e gere Access Keys.
 2. Adicione ao mesmo arquivo `~/.aws/credentials`:
 
 ```ini
@@ -63,7 +61,7 @@ output=json
 
 ---
 
-## Deploy — Passo a Passo
+## Deploy - Passo a Passo
 
 ### 1. Configure as variáveis
 
@@ -86,16 +84,16 @@ bedrock_secret_access_key = "..."
 make up
 ```
 
-Isso cria VPC, subnets, SGs, RDS, DynamoDB, S3, Kinesis, Glue, ECR, ECS Cluster e ALB.  
-Leva **15–25 minutos**, principalmente pelo RDS.
+Isso cria VPC, subnets, SGs, RDS, DynamoDB, S3, Kinesis, Glue, ECR, ECS Cluster e ALB  
+Leva **15-25 minutos**, principalmente pelo RDS
 
-### 3. Faça o build e push das imagens Docker
+### 3. Build e push das imagens Docker
 
 ```bash
 make push
 ```
 
-Compila os 6 containers e envia para o ECR. Requer o Docker Desktop rodando.
+Compila os 6 containers e envia para o ECR (Docker Desktop precisa estar rodando)
 
 ### 4. Execute o schema no banco
 
@@ -103,7 +101,7 @@ Compila os 6 containers e envia para o ECR. Requer o Docker Desktop rodando.
 make schema
 ```
 
-Cria as tabelas PostgreSQL (`customers`, `restaurants`, `couriers`, `orders`, `order_events`) com as extensões PostGIS e uuid-ossp.
+Cria as tabelas PostgreSQL (`customers`, `restaurants`, `couriers`, `orders`, `order_events`)
 
 ### 5. Acesse a aplicação
 
@@ -112,20 +110,20 @@ make outputs
 ```
 
 A saída mostrará:
-- `alb_dns_name` — URL do backend (todos os microsserviços)
-- `frontend_url` — URL do painel estático hospedado no S3
+- `alb_dns_name` - URL do backend (todos os microsserviços)
+- `frontend_url` - URL do painel estático hospedado no S3
 
 ---
 
 ## Destruir a Infraestrutura
 
-Para evitar cobranças no crédito do Learner Lab:
+Para destruir toda a infraestrutura e evitar gastos:
 
 ```bash
 make down
 ```
 
-Remove todos os recursos provisionados pelo Terraform (ECS, RDS, Load Balancer, S3, Kinesis, etc.).
+Remove todos os recursos provisionados pelo Terraform (ECS, RDS, Load Balancer, S3, Kinesis, etc.)
 
 ---
 
@@ -133,7 +131,7 @@ Remove todos os recursos provisionados pelo Terraform (ECS, RDS, Load Balancer, 
 
 ### Parar e retomar containers (instantâneo, sem Terraform)
 
-Esses comandos alteram apenas o `desired_count` do ECS — são os mais rápidos para economizar recursos durante desenvolvimento:
+Esses comandos alteram apenas o `desired_count` do ECS, são os mais rápidos para economizar recursos durante desenvolvimento:
 
 ```bash
 # Para um container específico (desired_count = 0)
@@ -168,7 +166,7 @@ enabled_services = [
   "position-tracker",
   "ml-inference",
   "dashboard-analytics",
-  # "conversational",  ← comentado = será destruído no próximo apply
+  # "conversational",  <- comentado = será destruído no próximo apply
 ]
 ```
 
@@ -185,7 +183,7 @@ make up      # aplica a mudança
 # Status de todos os serviços (running / desired / status)
 make status
 
-# Tail dos logs em tempo real de um serviço
+# Tail dos logs em tempo real
 make logs SERVICE=order-processor
 ```
 

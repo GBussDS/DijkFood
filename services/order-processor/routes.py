@@ -1,6 +1,3 @@
-"""
-DijkFood — Order Processor: Route Handlers
-"""
 import asyncio
 import json
 import logging
@@ -19,7 +16,6 @@ from graph_loader import calculate_route
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Configuração de serviços internos (via env vars)
 import os
 
 DB_HOST = os.environ.get("DB_HOST", "localhost")
@@ -31,12 +27,10 @@ KINESIS_STREAM = os.environ.get("KINESIS_STREAM", "dijkfood-events")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 ML_INFERENCE_URL = os.environ.get("ML_INFERENCE_URL", "http://ml-inference:8000")
 
-# Pool de conexões PostgreSQL (inicializado no startup)
 db_pool = None
 
 
 async def init_db():
-    """Inicializa o pool de conexões PostgreSQL."""
     global db_pool
     import asyncpg
     db_pool = await asyncpg.create_pool(
@@ -48,14 +42,12 @@ async def init_db():
 
 
 async def close_db():
-    """Fecha o pool de conexões."""
     global db_pool
     if db_pool:
         await db_pool.close()
 
 
 def get_kinesis_client():
-    """Retorna o cliente Kinesis (boto3)."""
     import boto3
     return boto3.client("kinesis", region_name=AWS_REGION)
 
@@ -71,11 +63,6 @@ VALID_TRANSITIONS = {
 
 @router.post("/api/orders/reset")
 async def reset_orders():
-    """
-    Endpoint administrativo: força todos os pedidos ativos para DELIVERED
-    e libera todos os entregadores BUSY em dois UPDATEs em lote.
-    Usado pelo simulador de carga antes de cada cenário.
-    """
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
 
@@ -108,7 +95,6 @@ async def reset_orders():
 
 @router.patch("/api/orders/{order_id}/status")
 async def update_order_status(order_id: UUID, req: dict):
-    """Atualiza o status de um pedido seguindo a máquina de estados."""
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
 
@@ -172,7 +158,6 @@ async def list_orders(
     search: Optional[str] = Query(None, description="Buscar por Order ID (prefixo)"),
     limit: int = Query(50, ge=1, le=200),
 ):
-    """Lista pedidos com filtros opcionais (para o dashboard frontend)."""
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
 
@@ -191,7 +176,6 @@ async def list_orders(
             params.append(f"{search}%")
             idx += 1
 
-        # Sem filtros explícitos: limita a última hora para evitar full scan
         if not conditions:
             conditions.append(f"o.created_at > NOW() - INTERVAL '1 hour'")
 
@@ -228,19 +212,19 @@ async def list_orders(
 @router.post("/api/orders", response_model=CreateOrderResponse, status_code=201)
 async def create_order(request: CreateOrderRequest):
     """
-    Cria um novo pedido.
+    Cria um novo pedido
 
     Estrutura de desempenho:
-    1+2. Lê cliente e restaurante (sem transação — só leitura)
-    3.   Dijkstra em thread pool (CPU-heavy, não bloqueia o event loop)
-    4.   ML inference fora de qualquer transação (I/O de rede)
-    5.   Transação CURTA: seleciona entregador + insere pedido + marca BUSY
-    6.   Kinesis fire-and-forget
+    1+2. Lê cliente e restaurante (sem transação, só leitura)
+    3. Dijkstra em thread pool (CPU-heavy, não bloqueia o event loop)
+    4. ML inference fora de qualquer transação
+    5.  Seleciona entregador + insere pedido + marca BUSY
+    6. Kinesis
     """
     if db_pool is None:
         raise HTTPException(status_code=503, detail="Database not ready")
 
-    # 1+2. Validar cliente e restaurante — leituras simples, sem transação
+    # 1+2. Validar cliente e restaurante
     async with db_pool.acquire() as conn:
         customer = await conn.fetchrow(
             "SELECT id, name, latitude, longitude FROM customers WHERE id = $1",
@@ -256,7 +240,7 @@ async def create_order(request: CreateOrderRequest):
         if not restaurant:
             raise HTTPException(status_code=404, detail="Restaurant not found")
 
-    # 3. Dijkstra — CPU-intensivo; timeout de 250ms + fallback haversine
+    # 3. Dijkstra
     import math
     loop = asyncio.get_event_loop()
     try:
@@ -269,7 +253,6 @@ async def create_order(request: CreateOrderRequest):
             timeout=0.25,
         )
     except (asyncio.TimeoutError, Exception):
-        # Fallback: distância haversine direta (29 km/h médio em SP)
         lat1 = math.radians(restaurant["latitude"])
         lon1 = math.radians(restaurant["longitude"])
         lat2 = math.radians(customer["latitude"])
@@ -283,8 +266,7 @@ async def create_order(request: CreateOrderRequest):
             [customer["latitude"], customer["longitude"]],
         ]
 
-    # 4. ML inference — I/O de rede, fora de qualquer transação
-    predicted_time = travel_time / 60.0  # fallback: segundos → minutos
+    predicted_time = travel_time / 60.0  # fallback: segundos -> minutos
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -308,7 +290,7 @@ async def create_order(request: CreateOrderRequest):
     except Exception as e:
         logger.warning(f"ML Inference falhou, usando fallback: {e}")
 
-    # 5. Transação CURTA: só operações de banco — seleciona entregador + insere + marca BUSY
+    # 5. só operações de banco —> seleciona entregador + insere + marca BUSY
     async with db_pool.acquire() as conn:
         async with conn.transaction():
             courier = await conn.fetchrow("""
@@ -343,7 +325,7 @@ async def create_order(request: CreateOrderRequest):
                 courier["id"],
             )
 
-    # 6. Kinesis — fire-and-forget, fora da transação
+    # 6. Kinesis
     try:
         kinesis = get_kinesis_client()
         kinesis.put_record(

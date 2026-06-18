@@ -20,14 +20,14 @@ ALL_SERVICES=(
   dashboard-analytics
 )
 
-# ── Account ID e registry URL (formato fixo do ECR) ──────────────────────────
+# -- Account ID e registry URL (formato fixo do ECR) ---------------------------
 
-echo "▶ Obtendo Account ID..."
+echo "> Obtendo Account ID..."
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 echo "  Account: $ACCOUNT_ID | Região: $REGION"
 REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-# ── Login no ECR com captura explícita de erros ───────────────────────────────
+# -- Login no ECR com captura explícita de erros -------------------------------
 
 echo "▶ Obtendo token ECR..."
 ECR_TOKEN_FILE=$(mktemp)
@@ -53,7 +53,7 @@ if [ $ECR_EXIT -ne 0 ] || [ ! -s "$ECR_TOKEN_FILE" ]; then
   exit 1
 fi
 
-echo "▶ Autenticando no Docker..."
+echo "> Autenticando no Docker..."
 cat "$ECR_TOKEN_FILE" | docker login --username AWS --password-stdin "$REGISTRY"
 LOGIN_EXIT=$?
 rm -f "$ECR_TOKEN_FILE" "$ECR_ERR_FILE"
@@ -62,9 +62,9 @@ if [ $LOGIN_EXIT -ne 0 ]; then
   echo "Verifique se o Docker está rodando e se as credenciais AWS são válidas." >&2
   exit 1
 fi
-echo "✓ Login no ECR realizado"
+echo "Login no ECR realizado"
 
-# ── Build e Push ──────────────────────────────────────────────────────────────
+# -- Build e Push -------------------------------------------------------------------
 
 build_and_push() {
   local svc="$1"
@@ -77,13 +77,13 @@ build_and_push() {
   fi
 
   echo ""
-  echo "▶ [$svc] Building (linux/amd64)..."
+  echo "> [$svc] Building (linux/amd64)..."
   docker buildx build --platform linux/amd64 -t "$image" "$svc_dir"
 
-  echo "▶ [$svc] Pushing..."
+  echo "> [$svc] Pushing..."
   docker push "$image"
 
-  echo "✓ [$svc] enviado: $image"
+  echo "[$svc] enviado: $image"
 }
 
 if [ -n "$SINGLE_SERVICE" ]; then
@@ -95,4 +95,4 @@ else
 fi
 
 echo ""
-echo "✓ Push concluído. Rode 'make status' para verificar os containers."
+echo "Push concluído. Rode 'make status' para verificar os containers."

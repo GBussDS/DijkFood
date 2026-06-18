@@ -108,6 +108,16 @@ output "services_config" {
   value       = { for svc in var.services : svc.name => { min_tasks = svc.min_tasks, max_tasks = svc.max_tasks, port = svc.port } }
 }
 
+output "db_username" {
+  description = "Usuário do RDS (usado pelo make schema)"
+  value       = var.db_username
+}
+
+output "db_name" {
+  description = "Nome do banco RDS (usado pelo make schema)"
+  value       = var.db_name
+}
+
 output "db_password" {
   description = "Senha do RDS (usada pelo make schema)"
   value       = var.db_password

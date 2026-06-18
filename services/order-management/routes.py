@@ -1,7 +1,3 @@
-"""
-DijkFood — Order Management: Route Handlers
-CRUD de clientes, restaurantes, entregadores + gerenciamento de status de pedidos.
-"""
 import asyncio
 import json
 import logging
@@ -23,7 +19,6 @@ from models import (
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Configuração
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_PORT = os.environ.get("DB_PORT", "5432")
 DB_NAME = os.environ.get("DB_NAME", "dijkfood")
@@ -34,7 +29,6 @@ AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 
 db_pool = None
 
-# Transições de status válidas
 VALID_TRANSITIONS = {
     "CONFIRMED": "PREPARING",
     "PREPARING": "READY_FOR_PICKUP",
@@ -158,7 +152,6 @@ async def get_courier(courier_id: UUID):
 
 @router.get("/api/couriers")
 async def list_couriers():
-    """Lista todos os entregadores com status atual (para o dashboard frontend)."""
     async with db_pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT id, name, vehicle_type, latitude, longitude, status
@@ -178,7 +171,6 @@ async def list_couriers():
 
 @router.get("/api/restaurants")
 async def list_restaurants():
-    """Lista restaurantes cadastrados."""
     async with db_pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT id, name, cuisine_type, latitude, longitude
@@ -188,7 +180,7 @@ async def list_restaurants():
 
 
 # ===================================================================
-# ORDERS — List & Status Management
+# ORDERS
 # ===================================================================
 @router.get("/api/orders")
 async def list_orders(
@@ -196,7 +188,6 @@ async def list_orders(
     search: Optional[str] = Query(None, description="Buscar por Order ID (prefixo)"),
     limit: int = Query(50, ge=1, le=200),
 ):
-    """Lista pedidos com filtros opcionais (para o dashboard frontend)."""
     async with db_pool.acquire() as conn:
         conditions = []
         params = []
@@ -212,7 +203,6 @@ async def list_orders(
             params.append(f"{search}%")
             idx += 1
 
-        # Sem filtros explícitos: limita a última hora para evitar full scan
         if not conditions:
             conditions.append(f"o.created_at > NOW() - INTERVAL '1 hour'")
 
@@ -261,10 +251,6 @@ async def get_order(order_id: UUID):
 
 @router.patch("/api/orders/{order_id}/status")
 async def update_order_status(order_id: UUID, req: UpdateStatusRequest):
-    """
-    Atualiza o status do pedido com validação de transição de estados.
-    Retorna HTTP 409 se a transição for inválida.
-    """
     async with db_pool.acquire() as conn:
         async with conn.transaction():
             order = await conn.fetchrow(
@@ -283,25 +269,21 @@ async def update_order_status(order_id: UUID, req: UpdateStatusRequest):
                     detail=f"Invalid transition: {current_status} → {req.status}. Expected: {expected_next}"
                 )
 
-            # Atualizar status
             await conn.execute("""
                 UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2
             """, req.status, order_id)
 
-            # Registrar evento
             await conn.execute("""
                 INSERT INTO order_events (id, order_id, status, timestamp)
                 VALUES ($1, $2, $3, NOW())
             """, uuid4(), order_id, req.status)
 
-            # Se DELIVERED, liberar entregador
             if req.status == "DELIVERED" and order["courier_id"]:
                 await conn.execute(
                     "UPDATE couriers SET status = 'AVAILABLE' WHERE id = $1",
                     order["courier_id"]
                 )
 
-    # Emitir evento para Kinesis
     try:
         kinesis = get_kinesis_client()
         kinesis.put_record(
@@ -323,7 +305,6 @@ async def update_order_status(order_id: UUID, req: UpdateStatusRequest):
 
 @router.post("/api/orders/reset")
 async def reset_environment():
-    """Avança todos os pedidos ativos para DELIVERED e libera entregadores."""
     async with db_pool.acquire() as conn:
         async with conn.transaction():
             result = await conn.fetchrow("""

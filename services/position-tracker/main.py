@@ -1,7 +1,3 @@
-"""
-DijkFood — Position Tracker: FastAPI Application
-Microsserviço de alta frequência para rastreamento de posição de entregadores.
-"""
 import logging
 from contextlib import asynccontextmanager
 

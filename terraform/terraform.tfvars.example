@@ -7,9 +7,11 @@ project     = "dijkfood"
 iam_role_name = "LabRole"
 
 # Credenciais da conta pessoal para o Amazon Bedrock
+# Crie um usuário IAM com AmazonBedrockFullAccess e gere Access Keys
 bedrock_profile           = "bedrock"
 bedrock_access_key_id     = "AKIA..."
 bedrock_secret_access_key = "..."
+bedrock_session_token     = ""
 bedrock_model_id          = "amazon.nova-micro-v1:0"
 
 # Banco de dados

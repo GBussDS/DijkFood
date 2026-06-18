@@ -12,8 +12,8 @@ cd "$TERRAFORM_DIR"
 
 DB_HOST=$(terraform output -raw rds_endpoint)
 DB_PASS=$(terraform output -raw db_password)
-DB_USER=dijkfood
-DB_NAME=dijkfood
+DB_USER=$(terraform output -raw db_username)
+DB_NAME=$(terraform output -raw db_name)
 S3_BUCKET=$(terraform output -raw s3_models_bucket)
 SUBNET_ID=$(terraform output -json private_subnet_ids | jq -r '.[0]')
 ECS_SG=$(terraform output -raw sg_ecs_id)

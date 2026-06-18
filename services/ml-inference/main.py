@@ -1,7 +1,3 @@
-"""
-DijkFood — ML Inference Engine: FastAPI Application
-Microsserviço de predições de tempo de entrega e demanda.
-"""
 import logging
 from contextlib import asynccontextmanager
 
@@ -77,7 +73,7 @@ app.add_middleware(
 
 @app.post("/api/predictions/delivery_time", response_model=DeliveryTimePredictionResponse)
 async def predict_delivery_time_endpoint(request: DeliveryTimePredictionRequest):
-    """Predição de tempo de entrega em minutos."""
+
     features = np.array([[
         request.distance_meters,
         request.hour,
@@ -95,7 +91,7 @@ async def predict_delivery_time_endpoint(request: DeliveryTimePredictionRequest)
 
 @app.post("/api/predictions/demand", response_model=DemandPredictionResponse)
 async def predict_demand_endpoint(request: DemandPredictionRequest):
-    """Predição de demanda em pedidos/hora para uma região e horário."""
+
     features = np.array([[
         request.region_lat,
         request.region_lon,

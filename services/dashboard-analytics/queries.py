@@ -1,7 +1,3 @@
-"""
-DijkFood — Dashboard Analytics: Query Helpers
-Executa consultas no Amazon Athena (dados históricos) e PostgreSQL (dados em tempo real).
-"""
 import json
 import logging
 import time
@@ -13,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-# ATHENA QUERIES (data lake — eventos históricos em Parquet)
+# ATHENA QUERIES
 # ============================================================
 
 ATHENA_ORDERS_PER_HOUR = """
@@ -186,10 +182,6 @@ def run_athena_query(
     database: str,
     output_location: str,
 ) -> Optional[List[Dict[str, Any]]]:
-    """
-    Executa query no Athena com polling síncrono (max 30s).
-    Retorna lista de dicts ou None em caso de falha.
-    """
     try:
         client = boto3.client("athena", region_name=region)
 
@@ -238,7 +230,7 @@ def run_athena_query(
 
 
 async def run_pg_query(pool, sql: str) -> List[Dict[str, Any]]:
-    """Executa query no PostgreSQL via asyncpg pool."""
+
     try:
         async with pool.acquire() as conn:
             rows = await conn.fetch(sql)
@@ -249,7 +241,7 @@ async def run_pg_query(pool, sql: str) -> List[Dict[str, Any]]:
 
 
 async def run_pg_fetchrow(pool, sql: str) -> Optional[Dict[str, Any]]:
-    """Executa query no PostgreSQL e retorna uma única row."""
+
     try:
         async with pool.acquire() as conn:
             row = await conn.fetchrow(sql)

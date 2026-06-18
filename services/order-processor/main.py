@@ -1,7 +1,3 @@
-"""
-DijkFood — Order Processor: FastAPI Application
-Microsserviço responsável pela criação de pedidos com cálculo de rota via Dijkstra.
-"""
 import logging
 import threading
 from contextlib import asynccontextmanager
@@ -19,20 +15,16 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifecycle: carrega o grafo de SP e inicializa DB no startup."""
     logger.info("=== Order Processor — Startup ===")
 
-    # Carregar grafo em thread separada para não bloquear o event loop
     graph_thread = threading.Thread(target=load_graph, daemon=True)
     graph_thread.start()
 
-    # Inicializar pool de conexões PostgreSQL
     await init_db()
 
     logger.info("Order Processor pronto para receber requisições")
     yield
 
-    # Shutdown
     logger.info("=== Order Processor — Shutdown ===")
     await close_db()
 
@@ -44,7 +36,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -53,7 +44,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Rotas
 app.include_router(router)
 
 

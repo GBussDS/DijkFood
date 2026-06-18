@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-DijkFood — Simulador de Pedidos
-Gera dados realistas com Faker e os envia pelas APIs públicas (via ALB),
-simulando o ciclo completo de pedidos em tempo real.
+DijkFood - Simulador de Pedidos
+gera dados realistas com faker e os envia pelas APIs públicas (via ALB),
+simulando o ciclo completo de pedidos em tempo real
 
-Uso:
+uso:
   pip install faker httpx
   python scripts/simulate_orders.py --alb http://<alb-url>
   python scripts/simulate_orders.py --alb http://<alb-url> --interval 5 --orders 50
@@ -22,9 +22,8 @@ from faker import Faker
 
 fake = Faker("pt_BR")
 
-# Bairros de São Paulo com coordenadas aproximadas
+# bairros de são paulo com coordenadas aproximadas
 SP_NEIGHBORHOODS = [
-    (-23.5489, -46.6388),  # Centro
     (-23.5613, -46.6564),  # Pinheiros
     (-23.5534, -46.6621),  # Vila Madalena
     (-23.5570, -46.6502),  # Consolação
@@ -43,7 +42,7 @@ CUISINE_TYPES = ["Japonesa", "Brasileira", "Italiana", "Americana", "Mexicana",
 
 VEHICLE_TYPES = ["Moto", "Bike", "Carro"]
 
-# Ciclo completo de status de um pedido
+# ciclo completo de status de um pedido
 STATUS_CHAIN = [
     "PREPARING",
     "READY_FOR_PICKUP",
@@ -61,7 +60,7 @@ def _coord_with_jitter(lat, lon, radius=0.015):
 
 
 async def seed_entities(client: httpx.AsyncClient, base: str, n_restaurants=10, n_customers=20, n_couriers=8):
-    """Cria restaurantes, clientes e entregadores se o banco estiver vazio."""
+    """Cria restaurantes, clientes e entregadores se o banco estiver vazio"""
 
     print("→ Verificando entidades existentes...")
 
@@ -75,7 +74,7 @@ async def seed_entities(client: httpx.AsyncClient, base: str, n_restaurants=10, 
     couriers = [c["id"] for c in existing_couriers]
     customers = []
 
-    # Restaurantes
+    # restaurantes
     if len(existing_restaurants) < n_restaurants:
         to_create = n_restaurants - len(existing_restaurants)
         print(f"  Criando {to_create} restaurantes...")
@@ -91,7 +90,7 @@ async def seed_entities(client: httpx.AsyncClient, base: str, n_restaurants=10, 
             if resp.status_code == 201:
                 restaurants.append(resp.json()["id"])
 
-    # Entregadores
+    # entregadores
     if len(existing_couriers) < n_couriers:
         to_create = n_couriers - len(existing_couriers)
         print(f"  Criando {to_create} entregadores...")
@@ -107,7 +106,7 @@ async def seed_entities(client: httpx.AsyncClient, base: str, n_restaurants=10, 
             if resp.status_code == 201:
                 couriers.append(resp.json()["id"])
 
-    # Clientes (criados on-the-fly; mantemos um pool em memória)
+    # clientes
     print(f"  Criando {n_customers} clientes iniciais...")
     for _ in range(n_customers):
         lat, lon = random.choice(SP_NEIGHBORHOODS)
@@ -142,7 +141,8 @@ async def create_order(client: httpx.AsyncClient, base: str, customer_id: str, r
 
 
 async def advance_order(client: httpx.AsyncClient, base: str, order_id: str, delay_between: float = 8.0):
-    """Avança um pedido pelo ciclo completo de status com delays entre transições."""
+    """Avança um pedido pelo ciclo completo de status com delays entre transições"""
+
     for status in STATUS_CHAIN:
         await asyncio.sleep(delay_between + random.uniform(-2, 4))
         resp = await client.patch(
@@ -155,10 +155,11 @@ async def advance_order(client: httpx.AsyncClient, base: str, order_id: str, del
 
 
 async def simulation_loop(base: str, interval: float, max_orders: int, delay_status: float):
-    """Loop principal: cria pedidos periodicamente e avança seu ciclo em background."""
+    """Loop principal: cria pedidos periodicamente e avança seu ciclo em background"""
+
 
     async with httpx.AsyncClient() as client:
-        # Seed inicial
+        # seed inicial
         restaurants, customers, couriers = await seed_entities(client, base)
 
         if not restaurants or not customers:
@@ -166,14 +167,14 @@ async def simulation_loop(base: str, interval: float, max_orders: int, delay_sta
             sys.exit(1)
 
         orders_created = 0
-        print(f"\n✓ Iniciando simulação — novo pedido a cada {interval}s\n")
+        print(f"\n✓ Iniciando simulação - novo pedido a cada {interval}s\n")
         print(f"{'Hora':10} {'Pedido':38} {'Status':12}")
         print("-" * 65)
 
         pending_tasks = set()
 
         while max_orders == 0 or orders_created < max_orders:
-            # Criar novo cliente ocasionalmente para variar o pool
+            # criar novo cliente ocasionalmente para variar o pool
             if random.random() < 0.15:
                 lat, lon = random.choice(SP_NEIGHBORHOODS)
                 lat, lon = _coord_with_jitter(lat, lon)
@@ -206,7 +207,7 @@ async def simulation_loop(base: str, interval: float, max_orders: int, delay_sta
 
             await asyncio.sleep(interval)
 
-        # Aguarda pedidos em andamento terminarem
+        # aguarda pedidos em andamento terminarem
         if pending_tasks:
             print(f"\nAguardando {len(pending_tasks)} pedidos finalizarem...")
             await asyncio.gather(*pending_tasks, return_exceptions=True)

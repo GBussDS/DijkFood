@@ -1,7 +1,3 @@
-"""
-DijkFood — ML Inference Engine: Model Loader
-Carrega modelos de ML de S3 ou usa fallback sintético.
-"""
 import logging
 import os
 
@@ -9,34 +5,28 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Modelos carregados em memória
 delivery_model = None
 demand_model = None
 MODELS_LOADED = False
 
 
 def load_models():
-    """
-    Carrega modelos de S3. Se não disponíveis, cria modelos fallback sintéticos.
-    """
+
     global delivery_model, demand_model, MODELS_LOADED
 
     bucket = os.environ.get("MODELS_BUCKET", "dijkfood-models")
     aws_region = os.environ.get("AWS_REGION", "us-east-1")
 
-    # Tentar carregar modelo de delivery_time de S3
     try:
         import boto3
         import joblib
 
         s3 = boto3.client("s3", region_name=aws_region)
 
-        # Modelo de tempo de entrega
         s3.download_file(bucket, "delivery_time_model.pkl", "/tmp/delivery_time_model.pkl")
         delivery_model = joblib.load("/tmp/delivery_time_model.pkl")
         logger.info("Modelo delivery_time carregado de S3")
 
-        # Modelo de demanda
         try:
             s3.download_file(bucket, "demand_model.pkl", "/tmp/demand_model.pkl")
             demand_model = joblib.load("/tmp/demand_model.pkl")
@@ -50,7 +40,6 @@ def load_models():
         delivery_model = None
         demand_model = None
 
-    # Criar modelos fallback se necessário
     if delivery_model is None:
         delivery_model = create_fallback_delivery_model()
 
@@ -62,10 +51,7 @@ def load_models():
 
 
 def create_fallback_delivery_model():
-    """
-    Cria um modelo fallback simples para predição de tempo de entrega.
-    Baseado em heurísticas razoáveis para delivery em SP.
-    """
+
     from sklearn.ensemble import GradientBoostingRegressor
 
     logger.info("Criando modelo fallback de delivery_time com dados sintéticos...")
@@ -73,7 +59,6 @@ def create_fallback_delivery_model():
     np.random.seed(42)
     n_samples = 1000
 
-    # Features sintéticas
     distance = np.random.uniform(500, 15000, n_samples)  # metros
     hour = np.random.randint(0, 24, n_samples)
     day_of_week = np.random.randint(0, 7, n_samples)
@@ -87,14 +72,13 @@ def create_fallback_delivery_model():
     X = np.column_stack([distance, hour, day_of_week, rest_lat, rest_lon,
                          cust_lat, cust_lon, courier_dist, active_orders])
 
-    # Target: tempo em minutos (baseado em heurísticas)
     base_time = distance / 500  # ~500m/min para moto/bike
-    hour_factor = np.where((hour >= 11) & (hour <= 14), 1.3,  # almoço
-                  np.where((hour >= 18) & (hour <= 21), 1.4,   # jantar
+    hour_factor = np.where((hour >= 11) & (hour <= 14), 1.3,
+                  np.where((hour >= 18) & (hour <= 21), 1.4,
                   1.0))
     congestion = active_orders / 50 * 0.2 + 1.0
     y = base_time * hour_factor * congestion + np.random.normal(0, 2, n_samples)
-    y = np.maximum(y, 5)  # mínimo 5 minutos
+    y = np.maximum(y, 5)
 
     model = GradientBoostingRegressor(n_estimators=100, max_depth=4, random_state=42)
     model.fit(X, y)
@@ -104,9 +88,7 @@ def create_fallback_delivery_model():
 
 
 def create_fallback_demand_model():
-    """
-    Cria um modelo fallback simples para predição de demanda.
-    """
+
     from sklearn.ensemble import GradientBoostingRegressor
 
     logger.info("Criando modelo fallback de demand com dados sintéticos...")
@@ -121,7 +103,6 @@ def create_fallback_demand_model():
 
     X = np.column_stack([lat, lon, hour, day_of_week])
 
-    # Target: pedidos/hora (baseado em padrões típicos)
     base_demand = 10
     hour_factor = np.where((hour >= 11) & (hour <= 14), 3.0,
                   np.where((hour >= 18) & (hour <= 21), 4.0,
@@ -139,17 +120,17 @@ def create_fallback_demand_model():
 
 
 def predict_delivery_time(features: np.ndarray) -> float:
-    """Prediz tempo de entrega em minutos."""
+
     if delivery_model is None:
-        return 30.0  # fallback absoluto
+        return 30.0
     prediction = delivery_model.predict(features)[0]
     return max(round(float(prediction), 1), 5.0)
 
 
 def predict_demand(features: np.ndarray) -> int:
-    """Prediz demanda em pedidos/hora."""
+
     if demand_model is None:
-        return 10  # fallback absoluto
+        return 10
     prediction = demand_model.predict(features)[0]
     return max(round(float(prediction)), 0)
 

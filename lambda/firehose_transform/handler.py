@@ -1,8 +1,3 @@
-"""
-DijkFood — Lambda: Firehose Transform
-Transformação opcional de registros do Kinesis Firehose antes de gravar em S3.
-Adiciona campos derivados: region (baseado em lat/lon), enriquecimento de dados.
-"""
 import base64
 import json
 import logging
@@ -10,7 +5,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# Grid de regiões de SP (simplificado)
+# grid de regiões de SP
 SP_REGIONS = {
     "zona_norte": (-23.45, -46.65),
     "zona_sul": (-23.65, -46.65),
@@ -21,7 +16,8 @@ SP_REGIONS = {
 
 
 def classify_region(lat, lon):
-    """Classifica uma coordenada em região de SP."""
+    """Classifica uma coordenada em região de SP"""
+
     if lat is None or lon is None:
         return "unknown"
 
@@ -41,24 +37,17 @@ def classify_region(lat, lon):
 
 
 def lambda_handler(event, context):
-    """
-    Handler de transformação do Firehose.
-    Cada record é transformado e retornado com resultado 'Ok', 'Dropped', ou 'ProcessingFailed'.
-    """
     output = []
 
     for record in event["records"]:
         try:
             payload = json.loads(base64.b64decode(record["data"]))
 
-            # Enriquecer com região
             lat = payload.get("latitude")
             lon = payload.get("longitude")
             payload["region"] = classify_region(lat, lon)
 
-            # Adicionar campos derivados com base no tipo de evento
             if payload.get("event_type") == "ORDER_CREATED":
-                # Extrair hora e dia da semana
                 from datetime import datetime
                 ts = payload.get("timestamp", "")
                 if ts:
@@ -69,7 +58,6 @@ def lambda_handler(event, context):
                     except Exception:
                         pass
 
-            # Re-codificar
             encoded = base64.b64encode(
                 json.dumps(payload).encode("utf-8")
             ).decode("utf-8")

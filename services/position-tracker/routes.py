@@ -1,7 +1,3 @@
-"""
-DijkFood — Position Tracker: Route Handlers
-Gerencia posições de entregadores via DynamoDB + emissão de eventos no Kinesis.
-"""
 import json
 import logging
 import os
@@ -47,15 +43,15 @@ def get_kinesis():
 @router.post("/api/positions")
 async def update_position(request: PositionUpdate):
     """
-    Recebe e armazena posição do entregador.
-    1. Escreve no DynamoDB (estado atual — hot data)
-    2. Emite evento POSITION_UPDATE para Kinesis (pipeline analítico)
+    Recebe e armazena posição do entregador
+    1. Escreve no DynamoDB
+    2. Emite evento POSITION_UPDATE para Kinesis
     """
     dynamodb = get_dynamodb()
     now = datetime.utcnow().isoformat()
     ttl = int(time.time()) + 86400  # 24h
 
-    # 1. Escrever no DynamoDB
+    # 1. escrever no DynamoDB
     try:
         dynamodb.put_item(
             TableName=DYNAMODB_TABLE,
@@ -72,7 +68,7 @@ async def update_position(request: PositionUpdate):
         logger.error(f"Erro ao escrever no DynamoDB: {e}")
         raise HTTPException(status_code=500, detail="Failed to store position")
 
-    # 2. Emitir evento para Kinesis
+    # 2. emitir evento para Kinesis
     try:
         kinesis = get_kinesis()
         kinesis.put_record(
@@ -95,7 +91,7 @@ async def update_position(request: PositionUpdate):
 
 @router.get("/api/positions/{courier_id}", response_model=PositionResponse)
 async def get_position(courier_id: UUID):
-    """Retorna a posição atual (última conhecida) de um entregador."""
+    """Retorna a última posição de um entregador"""
     dynamodb = get_dynamodb()
 
     try:
