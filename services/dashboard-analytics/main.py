@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import os
@@ -105,7 +106,7 @@ app.add_middleware(
 # ============================================================
 # HELPERS
 # ============================================================
-def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
+async def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
 
     global athena_available
     if athena_available is False:
@@ -113,7 +114,10 @@ def _try_athena(sql: str) -> Optional[List[Dict[str, Any]]]:
     if not ATHENA_DATABASE or not ATHENA_OUTPUT:
         athena_available = False
         return None
-    result = run_athena_query(sql, AWS_REGION, ATHENA_DATABASE, ATHENA_OUTPUT)
+    loop = asyncio.get_running_loop()
+    result = await loop.run_in_executor(
+        None, run_athena_query, sql, AWS_REGION, ATHENA_DATABASE, ATHENA_OUTPUT
+    )
     if result is not None:
         athena_available = True
     else:
@@ -187,8 +191,8 @@ async def dashboard_summary():
 @app.get("/api/dashboard/orders-per-hour")
 async def orders_per_hour():
 
-    data = _try_athena(ATHENA_ORDERS_PER_HOUR)
-    if data is not None:
+    data = await _try_athena(ATHENA_ORDERS_PER_HOUR)
+    if data:
         hour_map = {_safe_int(r["hora"]): _safe_int(r["total"]) for r in data}
         return {
             "labels": [f"{h}h" for h in range(24)],
@@ -211,8 +215,8 @@ async def orders_per_hour():
 @app.get("/api/dashboard/status-times")
 async def status_times():
 
-    data = _try_athena(ATHENA_STATUS_TIMES)
-    if data is not None:
+    data = await _try_athena(ATHENA_STATUS_TIMES)
+    if data:
         return {
             "labels": [r["status"] for r in data],
             "data": [_safe_float(r["avg_minutes"]) for r in data],
@@ -233,8 +237,8 @@ async def status_times():
 @app.get("/api/dashboard/top-restaurants")
 async def top_restaurants():
 
-    data = _try_athena(ATHENA_TOP_RESTAURANTS)
-    if data is not None:
+    data = await _try_athena(ATHENA_TOP_RESTAURANTS)
+    if data:
         return {
             "labels": [r["restaurant_id"] for r in data],
             "data": [_safe_int(r["total"]) for r in data],
@@ -255,8 +259,8 @@ async def top_restaurants():
 @app.get("/api/dashboard/delivery-histogram")
 async def delivery_histogram():
 
-    data = _try_athena(ATHENA_DELIVERY_HISTOGRAM)
-    if data is not None:
+    data = await _try_athena(ATHENA_DELIVERY_HISTOGRAM)
+    if data:
         return {
             "labels": [f"{_safe_int(r['bucket_min'])}-{_safe_int(r['bucket_min'])+5}"
                        for r in data],
@@ -279,8 +283,8 @@ async def delivery_histogram():
 @app.get("/api/dashboard/demand-heatmap")
 async def demand_heatmap():
 
-    data = _try_athena(ATHENA_DEMAND_HEATMAP)
-    if data is not None:
+    data = await _try_athena(ATHENA_DEMAND_HEATMAP)
+    if data:
         points = [
             {"x": _safe_int(r["hora"]), "y": _safe_int(r["dia_semana"]),
              "v": _safe_int(r["total"])}
@@ -303,8 +307,8 @@ async def demand_heatmap():
 @app.get("/api/dashboard/region-distribution")
 async def region_distribution():
 
-    data = _try_athena(ATHENA_REGION_DISTRIBUTION)
-    if data is not None:
+    data = await _try_athena(ATHENA_REGION_DISTRIBUTION)
+    if data:
         return {
             "labels": [r["region"] for r in data],
             "data": [_safe_int(r["total"]) for r in data],

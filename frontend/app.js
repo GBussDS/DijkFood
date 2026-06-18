@@ -146,8 +146,8 @@ async function checkSystemStatus() {
     const dot = document.getElementById('system-status-dot');
     const text = document.getElementById('system-status-text');
 
-    const health = await apiGet('/health');
-    if (health && health.status === 'ok') {
+    const health = await dashboardGet('/api/dashboard/summary');
+    if (health !== null) {
         dot.classList.add('online');
         text.textContent = 'Sistema Online';
     } else {

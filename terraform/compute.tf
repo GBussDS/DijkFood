@@ -105,7 +105,7 @@ resource "aws_ecs_task_definition" "services" {
         { name = "DB_PASS", value = var.db_password },
       ] : [],
       contains(local.ml_caller_services, each.key) ? [
-        { name = "ML_INFERENCE_URL", value = "http://localhost:8004" },
+        { name = "ML_INFERENCE_URL", value = "http://${aws_lb.main.dns_name}" },
       ] : [],
       each.key == local.bedrock_service ? [
         { name = "BEDROCK_MODEL_ID", value = var.bedrock_model_id },

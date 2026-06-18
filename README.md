@@ -216,7 +216,7 @@ Para popular o banco e o Kinesis com dados reais:
 
 ```bash
 pip install aiohttp pandas scikit-learn
-python simulator.py --url http://SEU_ALB_DNS --scenario normal --duration 300
+python scripts/load_test.py --url http://SEU_ALB_DNS --scenario normal --duration 300
 ```
 
 Cria restaurantes e entregadores fictícios e dispara dezenas de pedidos por segundo durante 5 minutos.

@@ -7,7 +7,7 @@ TERRAFORM_DIR="${REPO_ROOT}/terraform"
 SQL_FILE="${REPO_ROOT}/sql/schema.sql"
 REGION="${REGION:-us-east-1}"
 
-echo "▶ Obtendo configurações do Terraform..."
+echo "> Obtendo configurações do Terraform..."
 cd "$TERRAFORM_DIR"
 
 DB_HOST=$(terraform output -raw rds_endpoint)
@@ -21,14 +21,14 @@ CLUSTER=$(terraform output -raw ecs_cluster_name)
 
 ROLE_ARN=$(aws iam get-role --role-name LabRole --query 'Role.Arn' --output text --region "$REGION")
 
-echo "▶ Fazendo upload do schema.sql para S3..."
+echo "> Fazendo upload do schema.sql para S3..."
 S3_KEY="tmp/schema-runner/schema.sql"
 aws s3 cp "$SQL_FILE" "s3://${S3_BUCKET}/${S3_KEY}" --region "$REGION"
 
-echo "▶ Gerando URL pré-assinada (válida por 1h)..."
+echo "> Gerando URL pré-assinada (válida por 1h)..."
 PRESIGNED_URL=$(aws s3 presign "s3://${S3_BUCKET}/${S3_KEY}" --expires-in 3600 --region "$REGION")
 
-echo "▶ Registrando task definition temporária..."
+echo "> Registrando task definition temporária..."
 CONTAINER_DEF_FILE=$(mktemp /tmp/schema-runner-XXXXXX.json)
 cat > "$CONTAINER_DEF_FILE" << EOF
 [{
@@ -63,7 +63,7 @@ TASK_DEF_ARN=$(aws ecs register-task-definition \
 
 rm -f "$CONTAINER_DEF_FILE"
 
-echo "▶ Iniciando task Fargate..."
+echo "> Iniciando task Fargate..."
 TASK_ARN=$(aws ecs run-task \
   --cluster "$CLUSTER" \
   --task-definition "$TASK_DEF_ARN" \
@@ -74,7 +74,7 @@ TASK_ARN=$(aws ecs run-task \
   --output text)
 
 echo "  Task: $TASK_ARN"
-echo "▶ Aguardando conclusão (pode levar ~1-2 min para pull da imagem)..."
+echo "> Aguardando conclusão (pode levar ~1-2 min para pull da imagem)..."
 
 aws ecs wait tasks-stopped \
   --cluster "$CLUSTER" \
@@ -88,7 +88,7 @@ EXIT_CODE=$(aws ecs describe-tasks \
   --query 'tasks[0].containers[0].exitCode' \
   --output text)
 
-echo "▶ Limpando recursos temporários..."
+echo "> Limpando recursos temporários..."
 aws s3 rm "s3://${S3_BUCKET}/${S3_KEY}" --region "$REGION" 2>/dev/null || true
 aws ecs deregister-task-definition --task-definition "$TASK_DEF_ARN" --region "$REGION" > /dev/null 2>&1 || true
 

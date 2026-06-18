@@ -171,7 +171,6 @@ responda com o que você sabe sem tentar novamente.
         tools=tools,
         verbose=True,
         max_iterations=3,
-        early_stopping_method="generate",
         handle_parsing_errors=True,
     )
 

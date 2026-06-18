@@ -134,17 +134,18 @@ async def update_order_status(order_id: UUID, req: dict):
                 )
 
     try:
-        kinesis = get_kinesis_client()
-        kinesis.put_record(
-            StreamName=KINESIS_STREAM,
-            Data=json.dumps({
-                "event_type": "STATUS_CHANGED",
-                "order_id": str(order_id),
-                "old_status": current_status,
-                "new_status": new_status,
-                "timestamp": datetime.utcnow().isoformat(),
-            }),
-            PartitionKey=str(order_id),
+        _data = json.dumps({
+            "event_type": "STATUS_CHANGED",
+            "order_id": str(order_id),
+            "old_status": current_status,
+            "new_status": new_status,
+            "timestamp": datetime.utcnow().isoformat(),
+        })
+        await asyncio.get_running_loop().run_in_executor(
+            None,
+            lambda: get_kinesis_client().put_record(
+                StreamName=KINESIS_STREAM, Data=_data, PartitionKey=str(order_id)
+            ),
         )
     except Exception as e:
         logger.error(f"Falha ao emitir evento Kinesis: {e}")
@@ -327,21 +328,22 @@ async def create_order(request: CreateOrderRequest):
 
     # 6. Kinesis
     try:
-        kinesis = get_kinesis_client()
-        kinesis.put_record(
-            StreamName=KINESIS_STREAM,
-            Data=json.dumps({
-                "event_type": "ORDER_CREATED",
-                "order_id": str(order_id),
-                "customer_id": str(request.customer_id),
-                "restaurant_id": str(request.restaurant_id),
-                "courier_id": str(courier["id"]),
-                "estimated_time": predicted_time,
-                "latitude": restaurant["latitude"],
-                "longitude": restaurant["longitude"],
-                "timestamp": datetime.utcnow().isoformat(),
-            }),
-            PartitionKey=str(order_id),
+        _data = json.dumps({
+            "event_type": "ORDER_CREATED",
+            "order_id": str(order_id),
+            "customer_id": str(request.customer_id),
+            "restaurant_id": str(request.restaurant_id),
+            "courier_id": str(courier["id"]),
+            "estimated_time": predicted_time,
+            "latitude": restaurant["latitude"],
+            "longitude": restaurant["longitude"],
+            "timestamp": datetime.utcnow().isoformat(),
+        })
+        await asyncio.get_running_loop().run_in_executor(
+            None,
+            lambda: get_kinesis_client().put_record(
+                StreamName=KINESIS_STREAM, Data=_data, PartitionKey=str(order_id)
+            ),
         )
     except Exception as e:
         logger.error(f"Falha ao emitir evento Kinesis: {e}")

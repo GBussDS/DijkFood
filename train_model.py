@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-DijkFood A2 — Pipeline de Treinamento de Modelo ML
-Extrai dados do Athena, treina modelo de GradientBoosting, salva em S3.
+Extrai dados do Athena, treina modelo de GradientBoosting e salva no S3
 
 Modelos treinados:
-  1. delivery_time_model.pkl — Predição de tempo de entrega
-  2. demand_model.pkl — Predição de demanda por região/horário
+  1. delivery_time_model.pkl: Predição de tempo de entrega
+  2. demand_model.pkl: Predição de demanda por região/horário
 
 Uso:
   python train_model.py --bucket dijkfood-models-ACCOUNT_ID

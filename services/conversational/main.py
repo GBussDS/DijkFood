@@ -138,17 +138,26 @@ async def chat(request: ChatRequest):
         bot_response = _normalize_output(bot_response)
 
         # early_stopping_method="generate" já produz uma resposta, mas por segurança:
-        if not bot_response or "agent stopped" in bot_response.lower():
-            bot_response = "Não consegui obter os dados necessários para responder. Tente reformular a pergunta ou pergunte sobre pedidos, entregadores ou métricas específicas."
+        if not bot_response or "agent stopped" in bot_response.lower() or "iteration limit" in bot_response.lower():
+            bot_response = "Não consegui obter os dados a tempo. Tente perguntas como: 'quantos pedidos hoje?', 'entregadores disponíveis?' ou 'resumo operacional'."
 
     except Exception as e:
-        logger.error(f"Erro no agente: {e}")
+        logger.exception(f"Erro no agente")
         err = str(e).lower()
         if "max iterations" in err or "iteration limit" in err:
             bot_response = "Não consegui completar a consulta dentro do tempo limite. Tente uma pergunta mais específica, como 'quantos pedidos hoje?' ou 'entregadores disponíveis'."
+        elif "accessdenied" in err or "is not authorized" in err or "access denied" in err:
+            bot_response = "Erro de permissão no Bedrock (AccessDeniedException). Adicione a policy AmazonBedrockFullAccess ao IAM user usado nas credenciais."
+        elif "resourcenotfound" in err or "model not found" in err or "unable to locate" in err or "no such" in err:
+            bot_response = "Modelo não encontrado no Bedrock. Acesse AWS Console → Bedrock → Model access e habilite 'Amazon Nova Micro'."
+        elif "validationexception" in err or "validation error" in err:
+            bot_response = f"Erro de validação no Bedrock: {str(e)[:300]}"
+        elif "throttl" in err:
+            bot_response = "Muitas requisições ao Bedrock. Aguarde alguns segundos e tente novamente."
+        elif "connect" in err or "timeout" in err or "timed out" in err:
+            bot_response = "Timeout ao conectar ao Bedrock. Verifique a conectividade da VPC/NAT Gateway."
         else:
-            bot_response = f"Desculpe, ocorreu um erro ao processar sua pergunta. Tente novamente."
-            logger.error(f"Detalhe do erro: {e}")
+            bot_response = f"Erro Bedrock: {str(e)[:300]}"
 
     # Emitir evento de conversa para Kinesis
     try:

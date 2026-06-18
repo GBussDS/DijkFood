@@ -30,13 +30,13 @@ from faker import Faker
 fake = Faker("pt_BR")
 
 # ============================================================
-# CENÁRIOS — proporção fixa de 3 entregadores por cliente
+# CENÁRIOS
 # ============================================================
 SCENARIOS: Dict[int, dict] = {
     10: {
         "target_ops": 10,
         "customers": 50,
-        "couriers": 150,      # 3 × clientes
+        "couriers": 150,
         "restaurants": 10,
         "duration_seconds": 60,
         "description": "Carga Leve (10 ped/s)",
@@ -44,7 +44,7 @@ SCENARIOS: Dict[int, dict] = {
     100: {
         "target_ops": 100,
         "customers": 100,
-        "couriers": 300,      # 3 × clientes
+        "couriers": 300,
         "restaurants": 20,
         "duration_seconds": 30,
         "description": "Carga Média (100 ped/s)",
@@ -52,7 +52,7 @@ SCENARIOS: Dict[int, dict] = {
     200: {
         "target_ops": 200,
         "customers": 200,
-        "couriers": 600,      # 3 × clientes
+        "couriers": 600,
         "restaurants": 40,
         "duration_seconds": 20,
         "description": "Carga Alta (200 ped/s)",
@@ -76,7 +76,6 @@ CUISINE_TYPES = ["Japonesa", "Brasileira", "Italiana", "Americana", "Mexicana"]
 VEHICLE_TYPES = ["Moto", "Bike", "Carro"]
 STATUS_CHAIN = ["PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"]
 
-# Transições restantes a partir de cada status (para liberar entregadores no reset)
 REMAINING_TRANSITIONS: Dict[str, List[str]] = {
     "CONFIRMED":        ["PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"],
     "PREPARING":        ["READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT", "DELIVERED"],
@@ -106,14 +105,13 @@ def percentile(data: List[float], p: float) -> float:
 
 
 # ============================================================
-# RESET — libera entregadores ocupados de execuções anteriores
+# RESET - libera entregadores ocupados de execuções anteriores
 # ============================================================
-async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
-    """Libera entregadores ocupados de execuções anteriores.
 
-    Usa o endpoint /api/admin/reset-environment (dois UPDATEs em lote, <1s).
-    """
-    print("→ Resetando ambiente (pedidos ativos → DELIVERED, entregadores → AVAILABLE)...")
+async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
+    """Libera entregadores ocupados de execuções anteriores"""
+
+    print("-> Resetando ambiente (pedidos ativos -> DELIVERED, entregadores -> AVAILABLE)...")
 
     try:
         r = await client.post(f"{base}/api/orders/reset", timeout=30)
@@ -122,16 +120,15 @@ async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
             orders = data.get("orders_delivered", 0)
             couriers = data.get("couriers_released", 0)
             if orders == 0:
-                print("  ✓ Nenhum pedido ativo encontrado.\n")
+                print("  Nenhum pedido ativo encontrado.\n")
             else:
-                print(f"  ✓ {orders} pedidos → DELIVERED | {couriers} entregadores → AVAILABLE\n")
+                print(f" {orders} pedidos -> DELIVERED | {couriers} entregadores -> AVAILABLE\n")
             return
         else:
-            print(f"  ⚠ Endpoint retornou {r.status_code}, tentando fallback...")
+            print(f"   Endpoint retornou {r.status_code}, tentando fallback...")
     except Exception as e:
-        print(f"  ⚠ Endpoint indisponível ({e}), tentando fallback...")
+        print(f"   Endpoint indisponível ({e}), tentando fallback...")
 
-    # Fallback: avança passo a passo via PATCH (lento, mas funciona em qualquer versão)
     active_statuses = ["CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "PICKED_UP", "IN_TRANSIT"]
     sem = asyncio.Semaphore(100)
 
@@ -170,7 +167,7 @@ async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
                 if not isinstance(r, Exception) and r.status_code == 200:
                     found.extend(r.json())
         except Exception as e:
-            print(f"  ⚠ Não foi possível buscar pedidos: {e}")
+            print(f"   Não foi possível buscar pedidos: {e}")
             break
 
         if not found:
@@ -180,20 +177,41 @@ async def reset_environment(client: httpx.AsyncClient, base: str) -> None:
         total_delivered += len(found)
 
     if total_delivered == 0:
-        print("  ✓ Nenhum pedido ativo encontrado.\n")
+        print("   Nenhum pedido ativo encontrado.\n")
     else:
-        print(f"  ✓ {total_delivered} pedidos finalizados via fallback.\n")
+        print(f"   {total_delivered} pedidos finalizados via fallback.\n")
 
 
 # ============================================================
 # SEEDING — cria entidades com proporção 3:1
 # ============================================================
+
+def _collect_ids(results: list, endpoint: str) -> List[str]:
+    """Extrai IDs dos resultados 201 e imprime os primeiros erros para diagnóstico """
+
+    ids: List[str] = []
+    errors: List[str] = []
+    for r in results:
+        if isinstance(r, Exception):
+            errors.append(f"{type(r).__name__}: {r}")
+        elif r.status_code == 201:
+            ids.append(r.json()["id"])
+        else:
+            body = r.text[:300].replace("\n", " ")
+            errors.append(f"HTTP {r.status_code}: {body}")
+    for err in errors[:3]:
+        print(f" {endpoint}: {err}")
+    if len(errors) > 3:
+        print(f" {endpoint}: ... e mais {len(errors) - 3} falha(s)")
+    return ids
+
+
 async def seed_entities(
     client: httpx.AsyncClient,
     base: str,
     config: dict,
 ) -> Tuple[List[str], List[str], List[str]]:
-    print(f"\n→ Configurando entidades para {config['description']}...")
+    print(f"\n-> Configurando entidades para {config['description']}...")
     print(
         f"  Clientes: {config['customers']} | "
         f"Entregadores: {config['couriers']} (3:1) | "
@@ -204,16 +222,21 @@ async def seed_entities(
     customers: List[str] = []
     couriers: List[str] = []
 
-    # Reaproveitar entidades existentes (apenas entregadores AVAILABLE)
+    # reaproveitar entidades existentes
     try:
         r = await client.get(f"{base}/api/restaurants", timeout=15)
         if r.status_code == 200:
             restaurants = [x["id"] for x in r.json()]
+        elif r.status_code != 200:
+            print(f" GET /api/restaurants: HTTP {r.status_code}: {r.text[:200]}")
+
         r = await client.get(f"{base}/api/couriers", timeout=15)
         if r.status_code == 200:
             couriers = [x["id"] for x in r.json() if x.get("status") == "AVAILABLE"]
-    except Exception:
-        pass
+        elif r.status_code != 200:
+            print(f" GET /api/couriers: HTTP {r.status_code}: {r.text[:200]}")
+    except Exception as e:
+        print(f" Erro ao buscar entidades existentes: {e}")
 
     # Criar restaurantes faltantes
     to_create = max(0, config["restaurants"] - len(restaurants))
@@ -229,11 +252,9 @@ async def seed_entities(
                 "longitude": lon,
             }, timeout=15))
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        for resp in results:
-            if not isinstance(resp, Exception) and resp.status_code == 201:
-                restaurants.append(resp.json()["id"])
+        restaurants.extend(_collect_ids(results, "POST /api/restaurants"))
 
-    # Criar entregadores em lotes (pool HTTP é limitado)
+    # criar entregadores em lotes
     to_create = max(0, config["couriers"] - len(couriers))
     if to_create > 0:
         print(f"  Criando {to_create} entregadores (proporção 3:1)...")
@@ -250,14 +271,12 @@ async def seed_entities(
                     "longitude": lon,
                 }, timeout=15))
             results = await asyncio.gather(*tasks, return_exceptions=True)
-            for resp in results:
-                if not isinstance(resp, Exception) and resp.status_code == 201:
-                    couriers.append(resp.json()["id"])
+            couriers.extend(_collect_ids(results, "POST /api/couriers"))
             done = min(i + batch, to_create)
             print(f"    {done}/{to_create} entregadores...", end="\r", flush=True)
         print()
 
-    # Criar clientes (sempre novos para ter emails únicos)
+    # criar clientes
     print(f"  Criando {config['customers']} clientes...")
     tasks = []
     for _ in range(config["customers"]):
@@ -270,12 +289,10 @@ async def seed_entities(
             "longitude": lon,
         }, timeout=15))
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    for resp in results:
-        if not isinstance(resp, Exception) and resp.status_code == 201:
-            customers.append(resp.json()["id"])
+    customers.extend(_collect_ids(results, "POST /api/customers"))
 
     print(
-        f"  ✓ {len(restaurants)} restaurantes | "
+        f"    {len(restaurants)} restaurantes | "
         f"{len(customers)} clientes | "
         f"{len(couriers)} entregadores"
     )
@@ -299,8 +316,6 @@ async def run_load_scenario(
     errors = 0
     orders_created = 0
 
-    # Semáforos para controlar concorrência
-    # Mais slots para taxas mais altas
     max_create_concurrent = max(30, target_ops)
     max_advance_concurrent = max(50, target_ops // 2)
     create_sem = asyncio.Semaphore(max_create_concurrent)
@@ -311,7 +326,7 @@ async def run_load_scenario(
         max_keepalive_connections=max_create_concurrent * 2,
     )
 
-    print(f"\n→ Iniciando carga: {target_ops} ped/s por {duration}s...")
+    print(f"\n-> Iniciando carga: {target_ops} ped/s por {duration}s...")
     print(f"  {'Tempo':>8} {'Criados':>8} {'Erros':>6} {'P95 Reg':>10} {'P95 Query':>11}")
     print("  " + "─" * 50)
 
@@ -320,7 +335,7 @@ async def run_load_scenario(
     last_report = start_time
     next_fire = start_time
 
-    # Rastreia todas as tasks em flight
+    # rastreia todas as tasks em flight
     all_tasks: set = set()
 
     async with httpx.AsyncClient(
@@ -330,7 +345,6 @@ async def run_load_scenario(
 
         async def advance_order(order_id: str) -> None:
             for status in STATUS_CHAIN:
-                # Libera o semáforo entre cada passo para maximizar concorrência
                 async with advance_sem:
                     try:
                         await client.patch(
@@ -362,7 +376,6 @@ async def run_load_scenario(
                         registration_latencies.append(elapsed_ms)
                         orders_created += 1
                         order_id = resp.json()["order_id"]
-                        # Avança status em background para liberar entregador
                         adv = asyncio.create_task(advance_order(order_id))
                         all_tasks.add(adv)
                         adv.add_done_callback(all_tasks.discard)
@@ -393,26 +406,23 @@ async def run_load_scenario(
             if elapsed >= duration:
                 break
 
-            # Rate control: espera até o próximo slot de disparo
             sleep_for = next_fire - now
             if sleep_for > 0:
                 await asyncio.sleep(sleep_for)
 
             next_fire += interval
 
-            # Criar pedido
+            # criar pedido
             ct = asyncio.create_task(create_order())
             all_tasks.add(ct)
             ct.add_done_callback(all_tasks.discard)
 
-            # Intercala consulta a cada 10 criações
             query_counter += 1
             if query_counter % 10 == 0:
                 qt = asyncio.create_task(query_orders())
                 all_tasks.add(qt)
                 qt.add_done_callback(all_tasks.discard)
 
-            # Progress a cada 10s
             now = time.monotonic()
             if now - last_report >= 10:
                 elapsed_rep = now - start_time
@@ -427,14 +437,14 @@ async def run_load_scenario(
                 )
                 last_report = now
 
-        # Aguarda todas as tasks (criação + avanço de status)
+        # aguarda todas as tasks
         if all_tasks:
             await asyncio.gather(*all_tasks, return_exceptions=True)
 
     total_elapsed = time.monotonic() - start_time
     actual_ops = orders_created / total_elapsed if total_elapsed > 0 else 0
 
-    # Métricas de latência
+    # métricas de latência
     def metrics(data: List[float]) -> dict:
         if not data:
             return {"p50": 0, "p95": 0, "p99": 0, "mean": 0, "samples": 0}
@@ -516,11 +526,11 @@ async def push_to_dashboard(result: dict, dashboard_url: str) -> None:
                 json=result,
             )
             if resp.status_code in (200, 201):
-                print(f"  → Resultado enviado ao dashboard: {dashboard_url}")
+                print(f"    Resultado enviado ao dashboard: {dashboard_url}")
             else:
-                print(f"  ⚠ Dashboard retornou {resp.status_code}")
+                print(f"    Dashboard retornou {resp.status_code}")
     except Exception as e:
-        print(f"  ⚠ Falha ao enviar para dashboard: {e}")
+        print(f"    Falha ao enviar para dashboard: {e}")
 
 
 # ============================================================
@@ -539,14 +549,25 @@ async def run_single(base: str, target_ops: int, dashboard_url: Optional[str]) -
         restaurants, customers, couriers = await seed_entities(client, base, config)
 
     if not restaurants or not customers or not couriers:
-        print("ERRO: entidades insuficientes para o teste. Encerrando.")
+        missing = []
+        if not restaurants:
+            missing.append("restaurantes")
+        if not customers:
+            missing.append("clientes")
+        if not couriers:
+            missing.append("entregadores")
+        print(f"\nERRO: seed falhou para: {', '.join(missing)}.")
+        print("Verifique os erros  acima. Causas comuns:")
+        print("  • make schema não foi rodado (tabelas inexistentes -> HTTP 500)")
+        print("  • Serviços ECS ainda subindo (Health Check pendente -> HTTP 502/503)")
+        print("  • Credenciais AWS expiradas nos containers")
         sys.exit(1)
 
     result = await run_load_scenario(base, config, restaurants, customers)
     print_result(result)
 
     fname = save_result(result)
-    print(f"\n  → Resultado salvo: {fname}")
+    print(f"\n  -> Resultado salvo: {fname}")
 
     if dashboard_url:
         await push_to_dashboard(result, dashboard_url)
@@ -581,7 +602,7 @@ async def run_all(base: str, dashboard_url: Optional[str]) -> None:
         all_results.append(result)
 
         fname = save_result(result)
-        print(f"\n  → Resultado salvo: {fname}")
+        print(f"\n  -> Resultado salvo: {fname}")
 
         if dashboard_url:
             await push_to_dashboard(result, dashboard_url)
@@ -598,7 +619,7 @@ async def run_all(base: str, dashboard_url: Optional[str]) -> None:
         print(f"  {'Cenário':26} {'Ped/s':>7} {'P95 Reg':>10} {'P95 Query':>11} {'SLA':>5}")
         print(f"  {'─'*65}")
         for r in all_results:
-            sla = "✅" if r["sla_compliant"] else "❌"
+            sla = "Ok" if r["sla_compliant"] else "Não Ok"
             print(
                 f"  {r['description']:26} "
                 f"{r['actual_ops']:>6.1f} "

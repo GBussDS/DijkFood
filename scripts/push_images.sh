@@ -29,7 +29,7 @@ REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 # -- Login no ECR com captura explícita de erros -------------------------------
 
-echo "▶ Obtendo token ECR..."
+echo "> Obtendo token ECR..."
 ECR_TOKEN_FILE=$(mktemp)
 ECR_ERR_FILE=$(mktemp)
 
